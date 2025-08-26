@@ -1,0 +1,35 @@
+<div class="map-container" id="map"></div>
+
+<div class="filter-container">
+  <p>Achar ponto mais próximo de:</p>
+  <button *ngFor="let material of materiaisDisponiveis" (click)="tracarRotaParaMaterial(material)">
+    {{ material }}
+  </button>
+  <button class="btn-clear" (click)="limparRota()">Limpar Rota</button>
+</div>
+<div class="modal-overlay" *ngIf="modalAberto">
+  <div class="modal-content">
+    <h3>{{ pontoEmEdicao ? 'Editar Ponto' : 'Adicionar Novo Ponto de Coleta' }}</h3>
+    <form [formGroup]="pontoForm" (ngSubmit)="salvarPonto()">
+
+      <div class="form-group">
+        <label for="nome">Nome do Ponto</label>
+        <input id="nome" type="text" formControlName="nome" placeholder="Ex: EcoPonto Centro">
+      </div>
+
+      <div class="form-group">
+        <label>Materiais Aceitos</label>
+        <div class="checkbox-group" formArrayName="materiais">
+          <label *ngFor="let material of materiaisDisponiveis; let i = index">
+            <input type="checkbox" [formControlName]="i"> {{ material }}
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="fecharModal()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="pontoForm.invalid">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="login-container">
+  <div class="login-box">
+    <h2>{{ isLoginMode ? 'Login' : 'Criar Conta' }}</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" formControlName="senha" required>
+      </div>
+
+      <div class="form-group" *ngIf="!isLoginMode">
+        <label for="confirmarSenha">Confirmar Senha</label>
+        <input id="confirmarSenha" type="password" formControlName="confirmarSenha" required>
+        <div *ngIf="loginForm.errors?.['senhasNaoConferem'] && loginForm.get('confirmarSenha')?.touched" class="error-message">
+          As senhas não conferem.
+        </div>
+      </div>
+
+      <div *ngIf="mensagemSucesso" class="success-message">
+        {{ mensagemSucesso }}
+      </div>
+      <div *ngIf="mensagemErro" class="error-message">
+        {{ mensagemErro }}
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
+        {{ isLoginMode ? 'Entrar' : 'Cadastrar' }}
+      </button>
+    </form>
+
+    <div class="toggle-link">
+      <a (click)="toggleMode()">
+        {{ isLoginMode ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Faça o login' }}
+      </a>
+    </div>
+
+  </div>
+</div>
