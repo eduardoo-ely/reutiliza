@@ -1,43 +1,50 @@
 <div class="login-container">
-  <div class="login-box">
-    <h2>{{ isLoginMode ? 'Login' : 'Criar Conta' }}</h2>
+    <div class="login-box">
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">E-mail</label>
-        <input id="email" type="email" formControlName="email" required>
-      </div>
-
-      <div class="form-group">
-        <label for="senha">Senha</label>
-        <input id="senha" type="password" formControlName="senha" required>
-      </div>
-
-      <div class="form-group" *ngIf="!isLoginMode">
-        <label for="confirmarSenha">Confirmar Senha</label>
-        <input id="confirmarSenha" type="password" formControlName="confirmarSenha" required>
-        <div *ngIf="loginForm.errors?.['senhasNaoConferem'] && loginForm.get('confirmarSenha')?.touched" class="error-message">
-          As senhas não conferem.
+        <div class="header">
+            <img alt="Logo Reutiliza" class="logo" src="src\assets\logo.png">
+            <h1>Reutiliza</h1>
+            <p>Encontre pontos de coleta perto de você</p>
         </div>
-      </div>
 
-      <div *ngIf="mensagemSucesso" class="success-message">
-        {{ mensagemSucesso }}
-      </div>
-      <div *ngIf="mensagemErro" class="error-message">
-        {{ mensagemErro }}
-      </div>
+        <h2>{{ isLoginMode ? 'Acessar Plataforma' : 'Criar Nova Conta' }}</h2>
 
-      <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
-        {{ isLoginMode ? 'Entrar' : 'Cadastrar' }}
-      </button>
-    </form>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input id="email" type="email" formControlName="email" required>
+            </div>
 
-    <div class="toggle-link">
-      <a (click)="toggleMode()">
-        {{ isLoginMode ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Faça o login' }}
-      </a>
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input id="senha" type="password" formControlName="senha" required>
+            </div>
+
+            <div class="form-group" *ngIf="!isLoginMode">
+                <label for="confirmarSenha">Confirmar Senha</label>
+                <input id="confirmarSenha" type="password" formControlName="confirmarSenha" required>
+                <div *ngIf="loginForm.errors?.['senhasNaoConferem'] && loginForm.get('confirmarSenha')?.touched" class="error-message">
+                    As senhas não conferem.
+                </div>
+            </div>
+
+            <div *ngIf="mensagemSucesso" class="success-message">
+                {{ mensagemSucesso }}
+            </div>
+            <div *ngIf="mensagemErro" class="error-message">
+                {{ mensagemErro }}
+            </div>
+
+            <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
+                {{ isLoginMode ? 'Entrar' : 'Cadastrar' }}
+            </button>
+        </form>
+
+        <div class="toggle-link">
+            <a (click)="toggleMode()">
+                {{ isLoginMode ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Faça o login' }}
+            </a>
+        </div>
+
     </div>
-
-  </div>
 </div>

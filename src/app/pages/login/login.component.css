@@ -1,106 +1,154 @@
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f4f4f4;
+  /* MUDANÇA AQUI: Garante que está a usar a sua imagem de fundo */
+  background-image: url('/assets/fundo-login.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
 }
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
 .login-box {
+  position: relative;
   padding: 40px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
-h2 {
+
+.header {
+  margin-bottom: 20px;
+}
+
+/* MUDANÇA AQUI: Ajusta o tamanho do seu logo */
+.header .logo {
+  width: 100px; /* Aumentei um pouco para dar mais destaque */
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #2c5a3D;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.header p {
+  margin: 5px 0 0 0;
+  color: #555;
+  font-size: 1rem;
+}
+
+.login-box h2 {
   margin-bottom: 25px;
   color: #333;
+  font-weight: 600;
+  font-size: 1.5rem;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
 }
+
+/* O resto do CSS permanece o mesmo */
 .form-group {
   margin-bottom: 20px;
   text-align: left;
 }
+
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
 }
+
 .form-group input {
   width: 100%;
-  padding: 10px;
+  padding: 12px 15px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
   box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
 .btn-submit {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: none;
-  background-color: #007bff;
+  background: linear-gradient(90deg, #4CAF50, #2c5a3D);
   color: white;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
+  font-weight: 700;
   margin-bottom: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
 .btn-submit:disabled {
-  background-color: #a0c7ff;
+  background: #a5d6a7;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
+
 .toggle-link a {
-  color: #007bff;
+  color: #4CAF50;
   cursor: pointer;
   text-decoration: none;
+  font-weight: 600;
 }
+
 .toggle-link a:hover {
   text-decoration: underline;
 }
-.error-message {
-  color: #dc3545;
-  font-size: 14px;
-  margin-top: 5px;
-}
-.success-message {
-  color: #28a745;
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-.filter-container {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000; /* Garante que fique sobre o mapa */
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* Espaço entre os botões */
-}
 
-.filter-container p {
-  margin: 0 0 5px 0;
-  font-weight: bold;
+.error-message, .success-message {
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 6px;
   text-align: center;
 }
 
-.filter-container button {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #f8f8f8;
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
 }
 
-.filter-container button:hover {
-  background-color: #e8e8e8;
+.success-message {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
 }
-
-.filter-container .btn-clear {
-  background-color: #ffc107;
-  border-color: #ffc107;
-  font-weight: bold;
-}
-

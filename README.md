@@ -1,75 +1,98 @@
-# ♻️ Reutiliza App
+# ♻️ Reutiliza - Plataforma de Coleta Seletiva
 
 ## 🎯 Sobre o Projeto
 
-O **Reutiliza** é uma aplicação web interativa desenvolvida como a implementação prática do projeto acadêmico "ABEX-II". O objetivo principal é ajudar os usuários a encontrarem os pontos de coleta de materiais recicláveis mais próximos de sua localização atual, incentivando a prática da reciclagem e o descarte correto de resíduos na cidade de Chapecó - SC.
+O **Reutiliza** é uma aplicação web full-stack desenvolvida como projeto acadêmico. O objetivo é fornecer uma solução interativa e funcional para que os cidadãos de Chapecó, SC, possam localizar facilmente os Ecopontos da cidade, incentivando a reciclagem e o descarte correto de resíduos.
 
-O usuário pode visualizar todos os pontos de coleta no mapa, filtrar por tipo de material (plástico, vidro, etc.) e traçar uma rota otimizada do seu local até o destino.
+A plataforma exibe os pontos de coleta em um mapa, permite filtrar por tipo de material e traça rotas otimizadas, conectando o usuário ao ponto de coleta mais próximo.
 
 ---
 
 ## ✨ Funcionalidades Implementadas
 
-* **Autenticação de Usuários:** Sistema completo de Login e Cadastro de contas.
-* **Mapa Interativo (Leaflet):**
-    * **Geolocalização:** O mapa centraliza automaticamente na localização atual do usuário.
-    * **Visualização de Pontos:** Exibe todos os pontos de coleta cadastrados com ícones personalizados.
-    * **CRUD no Mapa:** Permite criar, editar e excluir pontos de coleta diretamente clicando no mapa.
-* **Sistema de Roteamento:**
-    * **Filtro por Material:** Botões de acesso rápido para filtrar por tipo de material.
-    * **Rota até o Ponto Mais Próximo:** Calcula e desenha a rota otimizada da localização do usuário até o ponto de coleta mais próximo que aceita o material selecionado.
-* **Persistência de Dados:** Todas as informações de usuários e pontos de coleta são salvas localmente no navegador usando `localStorage`.
+-   **Frontend Interativo:**
+    -   **Mapa Dinâmico (Leaflet):** Exibe todos os Ecopontos com ícones personalizados e informações detalhadas.
+    -   **Geolocalização:** Centraliza o mapa na localização atual do usuário para uma experiência personalizada.
+    -   **Sistema de Roteamento:** Calcula e desenha a rota do usuário até o ponto de coleta mais próximo que aceita o material selecionado.
+    -   **Design Responsivo e Moderno:** Interface limpa e agradável, construída para ser fácil de usar.
+
+-   **Backend Robusto:**
+    -   **API RESTful:** Um servidor Node.js com Express gerencia todas as requisições de dados.
+    -   **Banco de Dados na Nuvem:** Os dados são persistidos em um cluster MongoDB Atlas, garantindo escalabilidade e segurança.
+    -   **Estrutura Normalizada:** O banco de dados segue as 3 Formas Normais para garantir a integridade e consistência dos dados.
+
+-   **Autenticação de Usuários:** Sistema de login seguro para acesso à plataforma.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Frontend:** [Angular](https://angular.io/) v17+
-* **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
-* **Mapa:** [Leaflet](https://leafletjs.com/)
-* **Roteamento no Mapa:** [Leaflet Routing Machine](http://www.liedman.net/leaflet-routing-machine/)
-* **Estilização:** CSS3 puro e responsivo
+| Área             | Tecnologia                               |
+| ---------------- | ---------------------------------------- |
+| **Frontend** | Angular 17+, TypeScript, CSS3            |
+| **Backend** | Node.js, Express.js                      |
+| **Banco de Dados** | MongoDB, Mongoose, MongoDB Atlas (Cloud) |
+| **Mapa** | Leaflet, Leaflet Routing Machine         |
 
 ---
 
 ## 🚀 Como Executar o Projeto
 
-Para executar o projeto em sua máquina local, siga os passos abaixo:
+Para executar a aplicação completa em sua máquina local, siga os passos abaixo.
 
-1.  **Clone o repositório:**
+### Pré-requisitos
+
+-   [Node.js](https://nodejs.org/) (versão 18 ou superior)
+-   Uma conta no [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) para o banco de dados na nuvem.
+-   Angular CLI: `npm install -g @angular/cli`
+
+### 1. Clonar o Repositório
+
+```bash
+git clone [https://github.com/eduardoo-ely/reutiliza.git](https://github.com/eduardoo-ely/reutiliza.git)
+cd reutiliza
+```
+
+### 2. Configurar e Rodar o Backend
+
+1.  **Navegue até a pasta do backend:**
     ```bash
-    git clone [https://github.com/eduardo0ely/reutiliza.git](https://github.com/eduardo0ely/reutiliza.git)
+    cd reutiliza-backend
     ```
 
-2.  **Acesse a pasta do projeto:**
-    ```bash
-    cd reutiliza
-    ```
-
-3.  **Instale as dependências:**
-    (É necessário ter o [Node.js](https://nodejs.org/) instalado)
+2.  **Instale as dependências:**
     ```bash
     npm install
     ```
 
-4.  **Execute a aplicação:**
+3.  **Configure a Conexão com o Banco:**
+    -   Abra o arquivo `server.js`.
+    -   Na constante `MONGO_URI`, substitua a string de exemplo pela sua própria string de conexão do MongoDB Atlas.
+
+4.  **(Opcional) Popule o banco de dados com dados iniciais:**
+    ```bash
+    node seed.js
+    ```
+
+5.  **Inicie o servidor backend:**
+    ```bash
+    node server.js
+    ```
+    O servidor estará rodando em `http://localhost:3000`.
+
+### 3. Rodar o Frontend
+
+1.  **Abra um novo terminal** na pasta raiz do projeto (`reutiliza`).
+
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+
+3.  **Inicie a aplicação Angular:**
     ```bash
     ng serve
     ```
-
-5.  **Acesse no navegador:**
-    Abra seu navegador e acesse `http://localhost:4200/`.
+    A aplicação estará disponível em `http://localhost:4200`.
 
 ---
-
-## STATUS DO PROJETO
-
-🚧 **Em desenvolvimento...** 🚧
-
-Este projeto foi desenvolvido como parte de um trabalho acadêmico e está em constante evolução.
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença.

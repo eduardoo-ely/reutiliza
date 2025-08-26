@@ -1,66 +1,97 @@
-/* Garante que o mapa ocupe a tela inteira, fixo no fundo */
+:host {
+  font-family: 'Inter', sans-serif;
+}
+
 .map-container {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   width: 100vw;
-  z-index: 0; /* Coloca o mapa atrás de outros elementos */
+  z-index: 1; /* Fica no fundo */
 }
 
-/* Container para os botões flutuantes sobre o mapa */
+/* NOVO CABEÇALHO DO MAPA */
+.map-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000; /* Fica sobre o mapa */
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.map-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #2c5a3D;
+  font-weight: 700;
+}
+
+.map-header p {
+  margin: 5px 0 0 0;
+  color: #555;
+}
+
+
+/* Estilos do container de filtros (sem grandes alterações) */
 .filter-container {
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 1000; /* Garante que os botões fiquem sobre o mapa */
+  z-index: 1000;
   background: rgba(255, 255, 255, 0.9);
   padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 240px;
 }
 
 .filter-container p {
-  margin: 0 0 5px 0;
-  font-weight: 600;
-  font-family: sans-serif;
+  margin: 0 0 8px 0;
+  font-weight: 700;
   text-align: center;
-  color: #333;
+  color: #2c5a3D;
+  font-size: 1rem;
 }
 
 .filter-container button {
-  padding: 10px 15px;
+  padding: 12px 15px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #4CAF50;
   color: white;
-  font-weight: bold;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-weight: 600;
+  text-align: left;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .filter-container button:hover {
-  background-color: #0056b3;
+  background-color: #45a049;
   transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .filter-container .btn-clear {
-  background-color: #ffc107;
-  color: #333;
+  background-color: #f44336;
+  margin-top: 5px;
 }
 
 .filter-container .btn-clear:hover {
-  background-color: #e0a800;
+  background-color: #d32f2f;
 }
 
-
-/* Estilos do Modal (Popup) - sem alterações, mas incluído para completude */
+/* Estilos do Modal (sem grandes alterações) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -71,105 +102,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; /* Z-index mais alto para ficar sobre tudo */
+  z-index: 2000;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
   background-color: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   width: 90%;
   max-width: 450px;
 }
 
 .modal-content h3 {
   margin-top: 0;
-  margin-bottom: 20px;
-  font-family: sans-serif;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  font-family: sans-serif;
-  color: #555;
-}
-
-.form-group input[type="text"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.checkbox-group label {
-  display: flex;
-  align-items: center;
-  font-weight: normal;
-  margin-bottom: 5px;
-}
-
-.checkbox-group input {
-  margin-right: 8px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 25px;
-}
-
-.modal-actions button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.modal-actions .btn-secondary {
-  background-color: #e0e0e0;
-  color: #333;
-  margin-right: 10px;
-}
-
-.modal-actions .btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.modal-actions .btn-primary:disabled {
-  background-color: #a0c7ff;
-  cursor: not-allowed;
-}
-
-/* Estilos para os botões dentro do popup do mapa (Leaflet) */
-:host ::ng-deep .leaflet-popup-content button {
-  padding: 5px 10px;
-  margin-right: 5px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-:host ::ng-deep .leaflet-popup-content .btn-popup-editar {
-  background-color: #ffc107;
-}
-
-:host ::ng-deep .leaflet-popup-content .btn-popup-excluir {
-  background-color: #dc3545;
-  color: white;
+  margin-bottom: 25px;
+  color: #2c5a3D;
+  font-weight: 700;
 }

@@ -12,3 +12,5 @@ node_modules/
 .env
 # Arquivos de log
 *.log
+#Arquivo do banco
+reutiliza-backend/.env

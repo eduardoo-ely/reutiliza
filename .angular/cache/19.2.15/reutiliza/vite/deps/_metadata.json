@@ -1,0 +1,85 @@
+{
+  "hash": "15e0d0ba",
+  "configHash": "0e05a6f2",
+  "lockfileHash": "ad3d6166",
+  "browserHash": "d51e3fdb",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "96ef838b",
+      "needsInterop": false
+    },
+    "@angular/common/http": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+      "fileHash": "c0835bc8",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "401c900c",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "f7ada425",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "e0affe64",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "2cc5f3f0",
+      "needsInterop": false
+    },
+    "leaflet": {
+      "src": "../../../../../../node_modules/leaflet/dist/leaflet-src.js",
+      "file": "leaflet.js",
+      "fileHash": "abd846f1",
+      "needsInterop": true
+    },
+    "leaflet-routing-machine": {
+      "src": "../../../../../../node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.js",
+      "file": "leaflet-routing-machine.js",
+      "fileHash": "9dbfcefb",
+      "needsInterop": true
+    },
+    "rxjs/operators": {
+      "src": "../../../../../../node_modules/rxjs/dist/esm5/operators/index.js",
+      "file": "rxjs_operators.js",
+      "fileHash": "01b27ac7",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-JBXGZY57": {
+      "file": "chunk-JBXGZY57.js"
+    },
+    "chunk-NPQCCHWI": {
+      "file": "chunk-NPQCCHWI.js"
+    },
+    "chunk-FZIKNIHU": {
+      "file": "chunk-FZIKNIHU.js"
+    },
+    "chunk-XDA3QWFP": {
+      "file": "chunk-XDA3QWFP.js"
+    },
+    "chunk-MH3GK3UD": {
+      "file": "chunk-MH3GK3UD.js"
+    },
+    "chunk-EWHU56JM": {
+      "file": "chunk-EWHU56JM.js"
+    },
+    "chunk-EIB7IA3J": {
+      "file": "chunk-EIB7IA3J.js"
+    }
+  }
+}
