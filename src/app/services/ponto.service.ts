@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
 
 export interface PontoColeta {
   _id: string;
@@ -14,8 +14,9 @@ export interface PontoColeta {
 @Injectable({
   providedIn: 'root'
 })
+
 export class PontoService {
-  private readonly apiUrl = 'http://localhost:3000/api/pontos';
+  private readonly apiUrl = 'http://192.168.1.11:3000/api/pontos';
 
   constructor(private http: HttpClient) { }
 

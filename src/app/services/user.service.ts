@@ -9,17 +9,27 @@ export interface User {
   nome: string;
 }
 
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private readonly apiUrl = 'http://localhost:3000/api/users';
+  private readonly apiUrl = 'http://192.168.1.11/api/users';
   private readonly LOGGED_IN_USER_KEY = 'app-logged-in-user';
 
   constructor(private http: HttpClient) { }
 
-  login(email: string, senha: string): Observable<{ success: boolean, message: string, user?: User }> {
-    return this.http.post<{ success: boolean, message: string, user?: User }>(`${this.apiUrl}/login`, { email, senha }).pipe(
+  register(nome: string, email: string, senha: string): Observable<{ success: boolean, message: string }> {
+    return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/register`, { nome, email, senha });
+  }
+
+  login(email: string, senha: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, senha }).pipe(
         tap(response => {
           if (response.success && response.user) {
             sessionStorage.setItem(this.LOGGED_IN_USER_KEY, JSON.stringify(response.user));

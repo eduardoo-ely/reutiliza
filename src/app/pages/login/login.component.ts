@@ -5,6 +5,7 @@ import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
+// Função validadora personalizada para verificar se as senhas são iguais no registo
 export function senhasIguaisValidator(control: AbstractControl): ValidationErrors | null {
   const senha = control.get('senha');
   const confirmarSenha = control.get('confirmarSenha');
@@ -15,13 +16,13 @@ export function senhasIguaisValidator(control: AbstractControl): ValidationError
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule], // Dependências para componentes standalone
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  isLoginMode = true;
+  isLoginMode = true; // Controla se o formulário é de login ou de registo
   mensagemErro = '';
   mensagemSucesso = '';
 
@@ -32,12 +33,14 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Se o utilizador já estiver logado, redireciona-o diretamente para o mapa
     if (this.userService.isLoggedIn()) {
       this.router.navigate(['/rota']);
     }
     this.iniciarFormulario();
   }
 
+  // Inicia ou recria o formulário com as validações corretas para o modo atual
   iniciarFormulario(): void {
     if (this.isLoginMode) {
       this.loginForm = this.fb.group({
@@ -46,51 +49,61 @@ export class LoginComponent implements OnInit {
       });
     } else {
       this.loginForm = this.fb.group({
+        nome: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
         senha: ['', [Validators.required, Validators.minLength(6)]],
         confirmarSenha: ['', [Validators.required]]
-      }, { validators: senhasIguaisValidator });
+      }, { validators: senhasIguaisValidator }); // Aplica o validador de senhas
     }
   }
 
+  // Alterna entre o modo de login e o modo de registo
   toggleMode(): void {
     this.isLoginMode = !this.isLoginMode;
     this.mensagemErro = '';
     this.mensagemSucesso = '';
-    this.iniciarFormulario();
+    this.iniciarFormulario(); // Recria o formulário para o novo modo
   }
 
+  // Função chamada quando o formulário é submetido
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.mensagemErro = 'Por favor, preencha os campos corretamente.';
       return;
     }
+
     this.mensagemErro = '';
     this.mensagemSucesso = '';
-    const { email, senha } = this.loginForm.value;
+    const { email, senha, nome } = this.loginForm.value;
 
     if (this.isLoginMode) {
-      // MUDANÇA AQUI: Adicionados console.log para depuração
-      console.log('Tentando fazer login com:', { email, senha });
-
+      // --- LÓGICA DE LOGIN ---
       this.userService.login(email, senha).subscribe({
         next: (resultado) => {
-          console.log('Resposta recebida do backend:', resultado); // Vemos a resposta completa
           if (resultado.success) {
-            console.log('Login bem-sucedido! A navegar para /rota...');
-            this.router.navigate(['/rota']);
-          } else {
-            console.warn('Backend respondeu, mas o login falhou:', resultado.message);
-            this.mensagemErro = resultado.message;
+            this.router.navigate(['/rota']); // Redireciona para o mapa
           }
         },
         error: (err) => {
-          console.error('Erro na chamada de login:', err); // Vemos o erro completo
-          this.mensagemErro = err.error?.message || 'Erro ao tentar fazer login.';
+          // Mostra a mensagem de erro específica vinda do backend
+          this.mensagemErro = err.error.message || 'Erro ao tentar fazer login.';
         }
       });
     } else {
-      // Lógica de cadastro aqui
+      // --- LÓGICA DE REGISTO ---
+      this.userService.register(nome, email, senha).subscribe({
+        next: (resultado) => {
+          if (resultado.success) {
+            this.mensagemSucesso = resultado.message + ' Por favor, faça o login.';
+            this.toggleMode(); // Volta para a tela de login
+          }
+        },
+        error: (err) => {
+          // Mostra a mensagem de erro específica vinda do backend
+          this.mensagemErro = err.error.message || 'Erro ao tentar criar a conta.';
+        }
+      });
     }
   }
 }
+

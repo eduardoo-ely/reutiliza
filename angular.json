@@ -24,29 +24,32 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/assets"
             ],
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
               "node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css",
               "src/styles.css"
             ],
-            "scripts": [
-              "node_modules/leaflet/dist/leaflet.js"
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "leaflet-routing-machine"
             ]
-          }
+          },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
                 }
               ],
               "outputHashing": "all"
@@ -86,7 +89,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"
@@ -98,6 +102,6 @@
     }
   },
   "cli": {
-    "analytics": "b7c16e9e-14da-4a08-a9fe-6df770171d98"
+    "analytics": "698001e2-62ef-49e3-a8a3-ef848bca71b4"
   }
 }

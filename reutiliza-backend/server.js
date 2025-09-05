@@ -1,57 +1,92 @@
+// Carrega as variáveis de ambiente do ficheiro .env
 require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 
-// --- CONFIGURAÇÃO INICIAL ---
+// --- Importar os Modelos ---
+const User = require('./models/user.model');
+const PontoColeta = require('./models/pontoColeta.model');
+// Adicione outros modelos se necessário
+
+// --- Configuração Inicial ---
 const app = express();
 const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// --- CONEXÃO COM O MONGODB ---
-// MUDANÇA AQUI: A string de conexão agora é lida de forma segura
-// a partir do arquivo .env e não fica exposta no código.
+// --- Conexão com o MongoDB ---
 const MONGO_URI = process.env.MONGO_URI;
-
-// Uma verificação para garantir que o arquivo .env foi lido corretamente
 if (!MONGO_URI) {
-    console.error("ERRO FATAL: A variável MONGO_URI não foi encontrada. Verifique se o arquivo .env existe e está correto.");
-    process.exit(1); // Encerra a aplicação se a conexão não estiver definida
+    console.error("ERRO FATAL: A variável MONGO_URI não foi encontrada. Verifique o ficheiro .env.");
+    process.exit(1);
 }
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('>>> SUCESSO: Backend conectado ao MongoDB na nuvem!'))
     .catch(err => console.error('>>> ERRO de conexão com MongoDB:', err));
 
-// --- MODELS (sem alterações) ---
-const User = mongoose.model('User', new mongoose.Schema({}, { strict: false }), 'usuarios');
-const PontoColeta = mongoose.model('PontoColeta', new mongoose.Schema({}, { strict: false }), 'pontos_coleta');
-const Material = mongoose.model('Material', new mongoose.Schema({}, { strict: false }), 'materiais');
-const Associacao = mongoose.model('Associacao', new mongoose.Schema({}, { strict: false }), 'pontos_residuo_associacao');
+// --- ROTAS DA API ---
 
 
-// --- ROTAS DA API (sem alterações) ---
+// --- Rota Principal (Boas-vindas) ---
 app.get('/', (req, res) => {
-    res.status(200).send('<h1>Servidor Reutiliza Backend está no ar!</h1><p>Acesse a aplicação Angular em http://localhost:4200</p>');
+    res.status(200).send('<h1>Servidor Reutiliza Backend está no ar!</h1>');
+});
+
+// Rotas de Utilizadores (/api/users)
+
+app.post('/api/users/register', async (req, res) => {
+    try {
+        const { email, senha, nome } = req.body;
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ success: false, message: 'Este e-mail já está registado.' });
+        }
+        const salt = await bcrypt.genSalt(10);
+        const senhaComHash = await bcrypt.hash(senha, salt);
+        const newUser = new User({ nome, email, senha: senhaComHash });
+        await newUser.save();
+        res.status(201).json({ success: true, message: 'Conta criada com sucesso!' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Erro ao registar utilizador.' });
+    }
 });
 
 app.post('/api/users/login', async (req, res) => {
-    const { email, senha } = req.body;
     try {
-        const user = await User.findOne({ email, senha });
-        if (user) {
-            res.json({ success: true, message: 'Login bem-sucedido!', user });
-        } else {
-            res.status(401).json({ success: false, message: 'Credenciais inválidas.' });
+        const { email, senha } = req.body;
+
+        // Encontra o utilizador apenas pelo email
+        const user = await User.findOne({ email });
+
+        // Se o utilizador não for encontrado, envia a mensagem "Conta não existe"
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Nenhum utilizador encontrado com este e-mail.' });
         }
+
+        // Se o utilizador existe, compara a senha enviada com o hash guardado no banco
+        const senhaValida = await bcrypt.compare(senha, user.senha);
+
+        // Se as senhas não correspondem, envia a mensagem "Senha incorreta"
+        if (!senhaValida) {
+            return res.status(401).json({ success: false, message: 'Senha incorreta.' });
+        }
+
+        // Se tudo estiver correto, envia a resposta de sucesso
+        const userToReturn = { id: user._id, email: user.email, nome: user.nome };
+        res.json({ success: true, message: 'Login efetuado com sucesso!', user: userToReturn });
+
     } catch (error) {
+        console.error("Erro no login:", error);
         res.status(500).json({ success: false, message: 'Erro no servidor.' });
     }
 });
 
+// --- Rota de Pontos de Coleta (/api/pontos) ---
 app.get('/api/pontos', async (req, res) => {
     try {
         const pontos = await PontoColeta.aggregate([
@@ -65,7 +100,8 @@ app.get('/api/pontos', async (req, res) => {
     }
 });
 
-// --- INICIAR O SERVIDOR ---
+// --- Iniciar o Servidor ---
 app.listen(PORT, () => {
     console.log(`>>> SERVIDOR RODANDO em http://localhost:${PORT}`);
 });
+

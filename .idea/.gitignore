@@ -1,16 +1,17 @@
-# Default ignored files
 /shelf/
 /workspace.xml
-# Editor-based HTTP Client requests
+#editor-based HTTP Client requests
 /httpRequests/
-# Datasource local storage ignored files
+#datasource local storage ignored
 /dataSources/
 /dataSources.local.xml
-# Ignorar a pasta de dependências do Node.js
+#ignorar a pasta de dependências do Node.js
 node_modules/
-# Ignorar arquivos de ambiente (para senhas e chaves de API no futuro)
+#ignorar arquivos de ambiente (para senhas e chaves de API no futuro)
 .env
-# Arquivos de log
+#arquivos de log
 *.log
-#Arquivo do banco
+#arquivo do banco
 reutiliza-backend/.env
+#script de importar banco
+reutiliza-backend/seed.js
