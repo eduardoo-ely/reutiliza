@@ -1,41 +1,57 @@
+<!-- Painel Superior com Título -->
 <div class="top-panel">
-    <h1>Pontos de Coleta</h1>
-    <button class="btn-logout" (click)="logout()">Sair</button>
+    <h1>Reutiliza - Seu App de Coletas</h1>
 </div>
 
-<div class="map-container" id="map"></div>
+<!-- Contêiner do Mapa -->
+<div class="map-container" id="map">
+    <!-- Botão de recentralizar no canto inferior esquerdo -->
+    <button class="recenter-btn" (click)="recenterMap()" aria-label="Recentralizar mapa">
+        <img src="assets/bussola.png" alt="Recentralizar Mapa">
+    </button>
+</div>
 
+<!-- Painel Lateral de Filtros / Materiais -->
 <div class="filter-panel">
     <h3>Encontrar Rota Para:</h3>
-    <button class="btn-filter" *ngFor="let material of materiaisDisponiveis" (click)="tracarRotaParaMaterial(material)">
+    <button
+            class="btn-filter"
+            *ngFor="let material of materiaisDisponiveis"
+            (click)="tracarRotaParaMaterial(material)">
         {{ material }}
     </button>
     <button class="btn-filter btn-clear" (click)="limparRota()">Limpar Rota</button>
 </div>
 
+<!-- Modal de Adição/Edição de Ponto de Coleta -->
 <div class="modal-overlay" *ngIf="modalAberto">
     <div class="modal-content">
         <h3>{{ pontoEmEdicao ? 'Editar Ponto' : 'Adicionar Novo Ponto' }}</h3>
         <form [formGroup]="pontoForm" (ngSubmit)="salvarPonto()">
+
+            <!-- Nome do Ponto -->
             <div class="form-group">
                 <label for="nome">Nome do Ponto</label>
                 <input type="text" id="nome" formControlName="nome" required>
             </div>
 
+            <!-- Seleção de Materiais -->
             <div class="form-group">
-                <label>Materiais Aceites:</label>
+                <label>Materiais Aceitos:</label>
                 <div class="checkbox-group" formArrayName="materiais">
-                    <label *ngFor="let material of materiaisDisponiveis; let i = index">
+                    <label *ngFor="let material of materiaisDisponiveis; let i = index" class="checkbox-label">
                         <input type="checkbox" [formControlName]="i">
-                        {{ material }}
+                        <span>{{ material }}</span>
                     </label>
                 </div>
             </div>
 
+            <!-- Ações do Modal -->
             <div class="modal-actions">
                 <button type="button" class="btn-secondary" (click)="fecharModal()">Cancelar</button>
                 <button type="submit" class="btn-primary" [disabled]="pontoForm.invalid">Salvar</button>
             </div>
+
         </form>
     </div>
 </div>

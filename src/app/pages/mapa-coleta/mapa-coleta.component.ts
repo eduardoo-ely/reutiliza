@@ -1,6 +1,6 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
@@ -9,9 +9,7 @@ import { PontoColeta } from '../../services/models/ponto.models';
 import { UserService } from '../../services/user.service';
 
 declare module 'leaflet' {
-  namespace Routing {
-    function control(options: any): any;
-  }
+  namespace Routing { function control(options: any): any; }
 }
 
 @Component({
@@ -24,21 +22,45 @@ declare module 'leaflet' {
 export class MapaColetaComponent implements AfterViewInit {
   private map!: L.Map;
   private markersLayer = L.layerGroup();
-  private userLocation: L.LatLng | null = null;
   private routingControl: any = null;
   private todosOsPontos: PontoColeta[] = [];
+  private userLocation: L.LatLng | null = null;
+  private destinoMarker: L.Marker | null = null;
 
-  meuIconeCustomizado = L.icon({
-    iconUrl: 'https://img.icons8.com/?size=100&id=Ln7jSgbyMI2J&format=png&color=000000',
+  pontoColetaIcon = L.icon({
+    iconUrl: 'assets/espaco-reservado.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
+  });
+
+  destinoIcon = L.icon({
+    iconUrl: 'assets/saco-de-lixo.png', // ícone de saco de lixo
     iconSize: [50, 50],
     iconAnchor: [25, 50],
-    popupAnchor: [0, -50]
+    popupAnchor: [0, -50],
+    className: 'ponto-destino' // adiciona animação pulse
+  });
+
+  userLocationIcon = L.icon({
+    iconUrl: 'assets/localizacao-atual.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40]
   });
 
   modalAberto = false;
   pontoForm!: FormGroup;
   pontoEmEdicao: PontoColeta | null = null;
-  readonly materiaisDisponiveis = ['Eletroeletrônicos', 'Móveis', 'Vidros', 'Óleo de Cozinha', 'Pneus', 'Metais e Ferros', 'Papel e Papelão'];
+  readonly materiaisDisponiveis = [
+    'Eletroeletrônicos',
+    'Móveis',
+    'Vidros',
+    'Óleo de Cozinha',
+    'Pneus',
+    'Metais e Ferros',
+    'Papel e Papelão'
+  ];
 
   constructor(
       private pontoService: PontoService,
@@ -46,122 +68,101 @@ export class MapaColetaComponent implements AfterViewInit {
       private fb: FormBuilder,
       private router: Router
   ) {
-    // Protege a rota: se o utilizador não estiver logado, volta para a página de login
-    if (!this.userService.isLoggedIn()) {
-      this.router.navigate(['/']);
-    }
+    if (!this.userService.isLoggedIn()) this.router.navigate(['/']);
     this.criarFormulario();
   }
 
-  ngAfterViewInit(): void {
-    this.initMap();
-  }
-
-  logout(): void {
-    this.userService.logout();
-    this.router.navigate(['/']);
-  }
+  ngAfterViewInit(): void { this.initMap(); }
 
   private initMap(): void {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            this.userLocation = L.latLng(latitude, longitude);
-            this.map = L.map('map').setView(this.userLocation, 15);
-            L.circleMarker(this.userLocation, { radius: 10, color: '#007bff', fillColor: '#007bff', fillOpacity: 1 })
-                .addTo(this.map).bindPopup('Você está aqui!');
-            this.addTileLayerAndMarkers();
-          },
-          () => this.initMapAtDefaultLocation()
+          pos => this.startMapAt(pos.coords.latitude, pos.coords.longitude),
+          () => this.startMapAt(-27.10, -52.61) // fallback
       );
     } else {
-      this.initMapAtDefaultLocation();
+      this.startMapAt(-27.10, -52.61);
     }
   }
 
-  private initMapAtDefaultLocation(): void {
-    this.map = L.map('map').setView([-27.10, -52.61], 13);
-    this.addTileLayerAndMarkers();
-  }
+  private startMapAt(lat: number, lng: number): void {
+    this.userLocation = L.latLng(lat, lng);
+    this.map = L.map('map').setView(this.userLocation, 15);
 
-  private addTileLayerAndMarkers(): void {
+    // Marker usuário
+    L.marker(this.userLocation, { icon: this.userLocationIcon })
+        .addTo(this.map)
+        .bindPopup('Você está aqui!');
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
+
     this.map.addLayer(this.markersLayer);
     this.carregarPontos();
+  }
 
-    // Adiciona evento de clique no mapa para criar novos pontos
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      this.abrirModalParaCriar(e.latlng);
-    });
+  recenterMap(): void {
+    if (this.userLocation && this.map) this.map.flyTo(this.userLocation, 15);
+    else alert('Localização não encontrada. Aguarde ou permita acesso.');
   }
 
   private carregarPontos(): void {
     this.markersLayer.clearLayers();
     this.pontoService.getAll().subscribe({
-      next: (pontos) => {
+      next: pontos => {
         this.todosOsPontos = pontos;
-        pontos.forEach(ponto => this.adicionarMarker(ponto));
+        pontos.forEach(p => this.adicionarMarker(p));
       },
-      error: (err) => {
-        console.error('Erro ao carregar pontos de coleta:', err);
-        alert('Não foi possível carregar os pontos. Verifique se o backend está a funcionar.');
-      }
+      error: err => alert('Erro ao carregar pontos: ' + err)
     });
   }
 
   private adicionarMarker(ponto: PontoColeta): void {
     if (!ponto.latitude || !ponto.longitude) return;
-    const marker = L.marker([ponto.latitude, ponto.longitude], { icon: this.meuIconeCustomizado }).addTo(this.markersLayer);
 
-    const popupContent = `
-        <div class="popup-header">${ponto.nome}</div>
-        <div class="popup-body">
-            <strong>Materiais:</strong> ${ponto.materiais.join(', ')}
-        </div>
-        <div class="popup-actions">
-            <button class="btn-popup-editar" data-ponto-id="${ponto._id}">Editar</button>
-            <button class="btn-popup-excluir" data-ponto-id="${ponto._id}">Excluir</button>
-        </div>
-    `;
-    marker.bindPopup(popupContent);
+    const marker = L.marker([ponto.latitude, ponto.longitude], { icon: this.pontoColetaIcon })
+        .addTo(this.markersLayer);
 
-    // Adiciona os listeners para os botões do popup
-    marker.on('popupopen', () => {
-      document.querySelector(`[data-ponto-id="${ponto._id}"].btn-popup-editar`)?.addEventListener('click', () => this.abrirModalParaEditar(ponto));
-      document.querySelector(`[data-ponto-id="${ponto._id}"].btn-popup-excluir`)?.addEventListener('click', () => this.excluirPonto(ponto._id));
-    });
+    marker.on('mouseover', () => marker.getElement()!.style.transform = 'scale(1.3)');
+    marker.on('mouseout', () => marker.getElement()!.style.transform = 'scale(1)');
+
+    marker.bindPopup(`
+      <div class="popup-header">${ponto.nome}</div>
+      <div class="popup-body">
+        <strong>Materiais:</strong> ${ponto.materiais.join(', ')}
+      </div>
+    `);
   }
 
   tracarRotaParaMaterial(material: string): void {
-    if (!this.userLocation) {
-      alert('A sua localização ainda não foi determinada.');
-      return;
-    }
-    const pontosFiltrados = this.todosOsPontos.filter(p => p.materiais.includes(material) && p.latitude && p.longitude);
-    if (pontosFiltrados.length === 0) {
-      alert(`Nenhum ponto de coleta encontrado para "${material}".`);
-      return;
-    }
-    let pontoFinal = pontosFiltrados[0];
-    let menorDistancia = this.userLocation.distanceTo(L.latLng(pontoFinal.latitude, pontoFinal.longitude));
-    pontosFiltrados.forEach(ponto => {
-      const distancia = this.userLocation!.distanceTo(L.latLng(ponto.latitude, ponto.longitude));
-      if (distancia < menorDistancia) {
-        menorDistancia = distancia;
-        pontoFinal = ponto;
-      }
+    if (!this.userLocation) return alert('Localização não determinada.');
+
+    const pontos = this.todosOsPontos.filter(p => p.materiais.includes(material) && p.latitude && p.longitude);
+    if (!pontos.length) return alert(`Nenhum ponto de coleta para "${material}"`);
+
+    let destino = pontos[0];
+    let minDist = this.userLocation.distanceTo(L.latLng(destino.latitude, destino.longitude));
+    pontos.forEach(p => {
+      const dist = this.userLocation!.distanceTo(L.latLng(p.latitude, p.longitude));
+      if (dist < minDist) { minDist = dist; destino = p; }
     });
+
     this.limparRota();
-    const destino = L.latLng(pontoFinal.latitude, pontoFinal.longitude);
+
+    const destinoLatLng = L.latLng(destino.latitude, destino.longitude);
+    L.marker(destinoLatLng, { icon: this.destinoIcon })
+        .addTo(this.markersLayer)
+        .bindPopup(`Destino: ${destino.nome}`);
+
+    // Rota verde
     this.routingControl = L.Routing.control({
-      waypoints: [this.userLocation, destino],
-      show: false, addWaypoints: false,
+      waypoints: [this.userLocation, destinoLatLng],
+      show: false,
+      addWaypoints: false,
       createMarker: () => null,
-      lineOptions: { styles: [{ color: '#007bff', opacity: 0.8, weight: 6 }] }
+      lineOptions: { styles: [{ color: '#28a745', opacity: 0.9, weight: 6, lineCap: 'round' }] }
     }).addTo(this.map);
   }
 
@@ -169,6 +170,10 @@ export class MapaColetaComponent implements AfterViewInit {
     if (this.routingControl) {
       this.map.removeControl(this.routingControl);
       this.routingControl = null;
+    }
+    if (this.destinoMarker) {
+      this.map.removeLayer(this.destinoMarker);
+      this.destinoMarker = null;
     }
   }
 
@@ -189,13 +194,8 @@ export class MapaColetaComponent implements AfterViewInit {
 
   abrirModalParaEditar(ponto: PontoColeta): void {
     this.pontoEmEdicao = ponto;
-    const materiaisSelecionados = this.materiaisDisponiveis.map(material =>
-        ponto.materiais.includes(material)
-    );
-    this.pontoForm.patchValue({
-      nome: ponto.nome,
-      materiais: materiaisSelecionados
-    });
+    const sel = this.materiaisDisponiveis.map(m => ponto.materiais.includes(m));
+    this.pontoForm.patchValue({ nome: ponto.nome, materiais: sel });
     this.modalAberto = true;
     this.map.closePopup();
   }
@@ -203,49 +203,26 @@ export class MapaColetaComponent implements AfterViewInit {
   fecharModal(): void {
     this.modalAberto = false;
     this.pontoEmEdicao = null;
-    if (this.pontoForm.contains('latitude')) {
-      this.pontoForm.removeControl('latitude');
-      this.pontoForm.removeControl('longitude');
-    }
+    if (this.pontoForm.contains('latitude')) { this.pontoForm.removeControl('latitude'); this.pontoForm.removeControl('longitude'); }
   }
 
   salvarPonto(): void {
     if (this.pontoForm.invalid) return;
-
-    const formValue = this.pontoForm.value;
-    const materiaisSelecionados = this.materiaisDisponiveis.filter((_, i) => formValue.materiais[i]);
+    const val = this.pontoForm.value;
+    const materiaisSel = this.materiaisDisponiveis.filter((_, i) => val.materiais[i]);
 
     if (!this.pontoEmEdicao) {
-      // Lógica de CRIAÇÃO
-      const novoPonto = {
-        nome: formValue.nome,
-        materiais: materiaisSelecionados,
-        latitude: formValue.latitude,
-        longitude: formValue.longitude,
-      };
-      this.pontoService.save(novoPonto).subscribe(() => {
-        this.carregarPontos();
-        this.fecharModal();
-      });
+      const novo = { nome: val.nome, materiais: materiaisSel, latitude: val.latitude, longitude: val.longitude };
+      this.pontoService.save(novo).subscribe(() => { this.carregarPontos(); this.fecharModal(); });
     } else {
-      // Lógica de ATUALIZAÇÃO
-      const pontoAtualizado = {
-        nome: formValue.nome,
-        materiais: materiaisSelecionados
-      };
-      this.pontoService.update(this.pontoEmEdicao._id, pontoAtualizado).subscribe(() => {
-        this.carregarPontos();
-        this.fecharModal();
-      });
+      const atualizado = { nome: val.nome, materiais: materiaisSel };
+      this.pontoService.update(this.pontoEmEdicao._id, atualizado).subscribe(() => { this.carregarPontos(); this.fecharModal(); });
     }
   }
 
   excluirPonto(id: string): void {
-    if (confirm('Tem a certeza de que deseja excluir este ponto?')) {
-      this.pontoService.delete(id).subscribe(() => {
-        this.carregarPontos();
-        this.map.closePopup();
-      });
+    if (confirm('Deseja excluir este ponto?')) {
+      this.pontoService.delete(id).subscribe(() => { this.carregarPontos(); this.map.closePopup(); });
     }
   }
 }
