@@ -1,32 +1,33 @@
-<div class="map-header">
-    <h1>Reutiliza</h1>
-    <p>Pontos de Coleta em Chapecó</p>
+<div class="top-panel">
+    <h1>Pontos de Coleta</h1>
+    <button class="btn-logout" (click)="logout()">Sair</button>
 </div>
 
 <div class="map-container" id="map"></div>
 
-<div class="filter-container">
-    <p>Achar ponto mais próximo de:</p>
-    <button *ngFor="let material of materiaisDisponiveis" (click)="tracarRotaParaMaterial(material)">
+<div class="filter-panel">
+    <h3>Encontrar Rota Para:</h3>
+    <button class="btn-filter" *ngFor="let material of materiaisDisponiveis" (click)="tracarRotaParaMaterial(material)">
         {{ material }}
     </button>
-    <button class="btn-clear" (click)="limparRota()">Limpar Rota</button>
+    <button class="btn-filter btn-clear" (click)="limparRota()">Limpar Rota</button>
 </div>
+
 <div class="modal-overlay" *ngIf="modalAberto">
     <div class="modal-content">
-        <h3>{{ pontoEmEdicao ? 'Editar Ponto' : 'Adicionar Novo Ponto de Coleta' }}</h3>
+        <h3>{{ pontoEmEdicao ? 'Editar Ponto' : 'Adicionar Novo Ponto' }}</h3>
         <form [formGroup]="pontoForm" (ngSubmit)="salvarPonto()">
-
             <div class="form-group">
                 <label for="nome">Nome do Ponto</label>
-                <input id="nome" type="text" formControlName="nome" placeholder="Ex: EcoPonto Centro">
+                <input type="text" id="nome" formControlName="nome" required>
             </div>
 
             <div class="form-group">
-                <label>Materiais Aceitos</label>
+                <label>Materiais Aceites:</label>
                 <div class="checkbox-group" formArrayName="materiais">
                     <label *ngFor="let material of materiaisDisponiveis; let i = index">
-                        <input type="checkbox" [formControlName]="i"> {{ material }}
+                        <input type="checkbox" [formControlName]="i">
+                        {{ material }}
                     </label>
                 </div>
             </div>

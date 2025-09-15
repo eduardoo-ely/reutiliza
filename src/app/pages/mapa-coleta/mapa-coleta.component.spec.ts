@@ -2,7 +2,7 @@ import { Component, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import * as L from 'leaflet';
 
-import { PontoColeta } from '../../models/ponto.model';
+import { PontoColeta } from '../../services/models/ponto.model';
 import { PontoService } from '../../services/ponto.service';
 
 // Workaround para o ícone padrão do Leaflet não aparecer

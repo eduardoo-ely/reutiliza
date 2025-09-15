@@ -1,7 +1,8 @@
 export interface PontoColeta {
-  id: string;
+  _id: string;
   nome: string;
-  materiais: string[];
+  endereco: string;
   latitude: number;
   longitude: number;
+  materiais: string[];
 }

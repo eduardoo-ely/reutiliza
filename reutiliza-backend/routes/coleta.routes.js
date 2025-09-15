@@ -1,33 +1,47 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Coleta = require('../models/coleta.model');
+const PontoColeta = require("../models/pontoColeta.model");
 
-router.post('/', async (req, res) => {
+// GET /api/pontos
+router.get("/", async (req, res) => {
     try {
-        const novaColeta = new Coleta({
-            usuario_id: req.body.usuario_id,
-            ponto_id: req.body.ponto_id,
-            material_id: req.body.material_id,
-            quantidade_kg: req.body.quantidade_kg
-        });
+        const pontos = await PontoColeta.aggregate([
+            {
+                $lookup: {
+                    from: "pontos_residuo_associacao",
+                    localField: "_id",
+                    foreignField: "ponto_id",
+                    as: "associacoes",
+                },
+            },
+            {
+                $lookup: {
+                    from: "materiais",
+                    let: { assocIds: "$associacoes.residuo_id" },
+                    pipeline: [
+                        { $match: { $expr: { $in: ["$_id", "$$assocIds"] } } },
+                        { $project: { nome: 1, _id: 0 } },
+                    ],
+                    as: "materiais",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    nome: 1,
+                    endereco: 1,
+                    horario_funcionamento: 1,
+                    latitude: 1,
+                    longitude: 1,
+                    materiais: "$materiais.nome",
+                },
+            },
+        ]);
 
-        const coletaSalva = await novaColeta.save();
-        res.status(201).json(coletaSalva);
-
-    } catch (error) {
-        res.status(400).json({ message: 'Erro ao registar a coleta.', error: error.message });
-    }
-});
-
-router.get('/usuario/:usuarioId', async (req, res) => {
-    try {
-        const historico = await Coleta.find({ usuario_id: req.params.usuarioId })
-            .populate('ponto_id', 'nome')
-            .populate('material_id', 'nome');
-
-        res.json(historico);
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar o histórico do utilizador.', error: error.message });
+        res.json(pontos);
+    } catch (err) {
+        console.error("Erro no GET /api/pontos:", err);
+        res.status(500).json({ message: "Erro ao buscar pontos de coleta." });
     }
 });
 

@@ -1,10 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+/* Estilos Globais */
+
+:root {
+    --primary-green: #2E7D32;
+    --dark-green: #1B5E20;
+    --light-gray: #f4f4f5;
+    --text-color: #333;
+    --border-color: #ddd;
+    --error-red: #d32f2f;
+    --success-green: #388e3c;
+}
 
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    width: 100%;
     font-family: 'Inter', sans-serif;
-    overflow: hidden;
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
 }

@@ -1,97 +1,103 @@
-:host {
-  font-family: 'Inter', sans-serif;
-}
+/* Estilos da Página do Mapa */
 
 .map-container {
-  position: fixed;
-  top: 0;
-  left: 0;
   height: 100vh;
   width: 100vw;
-  z-index: 1; /* Fica no fundo */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
-/* NOVO CABEÇALHO DO MAPA */
-.map-header {
+.filter-panel {
   position: absolute;
   top: 20px;
   left: 20px;
-  z-index: 1000; /* Fica sobre o mapa */
-  background: rgba(255, 255, 255, 0.9);
-  padding: 15px 25px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.map-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #2c5a3D;
-  font-weight: 700;
-}
-
-.map-header p {
-  margin: 5px 0 0 0;
-  color: #555;
-}
-
-
-/* Estilos do container de filtros (sem grandes alterações) */
-.filter-container {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
+  background-color: white;
   padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 240px;
+  max-width: 250px;
 }
 
-.filter-container p {
-  margin: 0 0 8px 0;
-  font-weight: 700;
+.filter-panel h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: var(--primary-green);
   text-align: center;
-  color: #2c5a3D;
-  font-size: 1rem;
 }
 
-.filter-container button {
-  padding: 12px 15px;
-  border: none;
-  border-radius: 8px;
+.btn-filter {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  color: var(--text-color);
+  border-radius: 6px;
   cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-  font-weight: 600;
   text-align: left;
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.filter-container button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.btn-filter:hover {
+  background-color: var(--primary-green);
+  color: white;
+  border-color: var(--primary-green);
 }
 
-.filter-container .btn-clear {
-  background-color: #f44336;
-  margin-top: 5px;
+/* Estilos para o popup do mapa */
+:host ::ng-deep .leaflet-popup-content-wrapper {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
 
-.filter-container .btn-clear:hover {
-  background-color: #d32f2f;
+:host ::ng-deep .leaflet-popup-content {
+  margin: 15px !important;
 }
 
-/* Estilos do Modal (sem grandes alterações) */
+/* Estilos para o conteúdo do popup */
+.popup-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-green);
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.popup-body {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.popup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.popup-actions button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  transition: opacity 0.2s;
+}
+.popup-actions button:hover {
+  opacity: 0.85;
+}
+
+.btn-popup-editar { background-color: #0288d1; }
+.btn-popup-excluir { background-color: var(--error-red); }
+.btn-popup-coleta { background-color: var(--success-green); }
+
+
+/* Estilos para os modais (Adicionar/Editar/Coleta) */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -103,21 +109,53 @@
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-  background-color: white;
+  background: white;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   width: 90%;
-  max-width: 450px;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .modal-content h3 {
   margin-top: 0;
-  margin-bottom: 25px;
-  color: #2c5a3D;
-  font-weight: 700;
+  color: var(--primary-green);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--primary-green);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--dark-green);
+}
+
+.btn-secondary {
+  background-color: #e0e0e0;
+  color: #333;
+}
+.btn-secondary:hover {
+  background-color: #bdbdbd;
 }
