@@ -114,7 +114,7 @@ Frontend em: <http://localhost:4200>
 
 ## 👨‍💻 Autores
 
--   **Eduardo Ely** -- Desenvolvimento Full-stack\
+-   **Eduardo de Paula** -- Desenvolvimento Full-stack\
 -   Projeto acadêmico de **Ciência da Computação - Unochapecó**
 
 ------------------------------------------------------------------------
