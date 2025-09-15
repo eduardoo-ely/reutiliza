@@ -1,0 +1,36 @@
+<div class="perfil-container" *ngIf="user">
+    <div class="perfil-header">
+        <div class="avatar-container">
+            <img src="assets/default-avatar.png" alt="Avatar do Utilizador" class="avatar">
+            <!-- Lógica para molduras pode ser adicionada aqui -->
+        </div>
+        <h2>{{ user.nome }}</h2>
+        <p class="bio">{{ user.bio }}</p>
+        <div class="pontos-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.3 5.7 2.9 2.9a2 2 0 0 1 0 2.8L12 20.6a2 2 0 0 1-2.8 0L2.8 11.4a2 2 0 0 1 0-2.8l2.9-2.9a2 2 0 0 1 2.8 0L12 9.1l3.5-3.5a2 2 0 0 1 2.8 0Z"/></svg>
+            <span>{{ user.pontos }} Pontos</span>
+        </div>
+    </div>
+
+    <div class="perfil-content">
+        <h3>Meus Badges</h3>
+        <div class="badges-container">
+            <!-- Lógica para mostrar os badges adquiridos -->
+            <span class="badge">Reciclador</span>
+        </div>
+
+        <h3>Histórico de Coletas</h3>
+        <p>Funcionalidade em construção.</p>
+    </div>
+
+    <!-- Painel de Administrador (visível apenas para admins) -->
+    <div class="admin-panel" *ngIf="user.role === 'admin'">
+        <h3>Painel de Administrador</h3>
+        <p>Bem-vindo, Admin! Aqui você pode gerir a plataforma.</p>
+        <!-- A lista de utilizadores seria renderizada aqui -->
+    </div>
+</div>
+
+<div *ngIf="!user" class="loading">
+    <p>A carregar perfil...</p>
+</div>

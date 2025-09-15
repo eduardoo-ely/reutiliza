@@ -15,7 +15,6 @@ async function popularBancoDeDados() {
         const db = client.db(DB_NAME);
         console.log(`Conectado a "${DB_NAME}".`);
 
-        // --- 1. Limpar e recriar utilizadores ---
         console.log('\nLimpando e recriando a coleção de utilizadores...');
         await db.collection('usuarios').deleteMany({});
 
@@ -29,9 +28,7 @@ async function popularBancoDeDados() {
         ]);
         console.log('Utilizadores de exemplo inseridos com senhas encriptadas.');
 
-        console.log('\n-------------------------------------------------------------');
         console.log('>>> SUCESSO: A base de dados está pronta para o login!');
-        console.log('-------------------------------------------------------------');
 
     } catch (err) {
         console.error('\nOcorreu um erro durante o processo:', err);
