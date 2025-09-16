@@ -5,4 +5,5 @@ export interface PontoColeta {
   latitude: number;
   longitude: number;
   materiais: string[];
+  horario: string;
 }
