@@ -1,0 +1,53 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Angular / Frontend
+.angular/
+dist/
+build/
+*.log
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Capacitor / Mobile
+android/
+ios/
+capacitor.config.json
+plugins/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs / Temp
+*.log
+*.tmp
+*.cache
+*.tsbuildinfo
+
+# Sistema / OS
+.DS_Store
+Thumbs.db
+
+# Public / Assets
+public/assets/
+public/favicon.ico
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/build/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.angular/
