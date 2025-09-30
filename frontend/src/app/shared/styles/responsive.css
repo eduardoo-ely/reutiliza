@@ -1,0 +1,131 @@
+/* Estilos responsivos globais */
+
+/* Breakpoints padrão */
+/* xs: 0-575px (dispositivos muito pequenos) */
+/* sm: 576px-767px (dispositivos pequenos) */
+/* md: 768px-991px (dispositivos médios) */
+/* lg: 992px-1199px (dispositivos grandes) */
+/* xl: 1200px+ (dispositivos extra grandes) */
+
+/* Ajustes para dispositivos móveis (xs e sm) */
+@media (max-width: 767px) {
+  /* Ajustes de layout */
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  /* Ajustes de texto */
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.3rem;
+  }
+  
+  /* Ajustes de formulários */
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-control {
+    font-size: 16px; /* Evita zoom automático em iOS */
+  }
+  
+  /* Ajustes de botões */
+  .btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  /* Ajustes de modais */
+  .modal-container {
+    width: 95%;
+    max-height: 85vh;
+  }
+  
+  /* Ajustes de tabelas */
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  /* Ajustes de grids */
+  .row {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+  
+  .col {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  /* Ajustes de navegação */
+  .nav-item {
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+  
+  /* Ajustes de cards */
+  .card {
+    margin-bottom: 15px;
+  }
+}
+
+/* Ajustes para tablets (md) */
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Ajustes de layout */
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  /* Ajustes de botões */
+  .btn-group .btn {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* Ajustes para toque (todos os dispositivos móveis) */
+@media (hover: none) {
+  /* Aumentar área de toque */
+  .btn, 
+  .nav-link,
+  .dropdown-item,
+  .form-check-label,
+  .close-button {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Ajustes para elementos interativos */
+  .clickable-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .clickable-item:active {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Ajustes para orientação paisagem em dispositivos móveis */
+@media (max-width: 767px) and (orientation: landscape) {
+  .modal-container {
+    max-height: 80vh;
+  }
+  
+  .full-height-section {
+    min-height: auto;
+  }
+}

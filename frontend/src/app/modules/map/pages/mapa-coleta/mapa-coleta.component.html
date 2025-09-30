@@ -1,57 +1,27 @@
-<!-- Painel Superior com Título -->
-<div class="top-panel">
-    <h1>Reutiliza - Seu App de Coletas</h1>
-</div>
-
-<!-- Contêiner do Mapa -->
-<div class="map-container" id="map">
-    <!-- Botão de recentralizar no canto inferior esquerdo -->
-    <button class="recenter-btn" (click)="recenterMap()" aria-label="Recentralizar mapa">
-        <img src="assets/bussola.png" alt="Recentralizar Mapa">
-    </button>
-</div>
-
-<!-- Painel Lateral de Filtros / Materiais -->
-<div class="filter-panel">
-    <h3>Encontrar Rota Para:</h3>
-    <button
-            class="btn-filter"
-            *ngFor="let material of materiaisDisponiveis"
-            (click)="tracarRotaParaMaterial(material)">
-        {{ material }}
-    </button>
-    <button class="btn-filter btn-clear" (click)="limparRota()">Limpar Rota</button>
-</div>
-
-<!-- Modal de Adição/Edição de Ponto de Coleta -->
-<div class="modal-overlay" *ngIf="modalAberto">
-    <div class="modal-content">
-        <h3>{{ pontoEmEdicao ? 'Editar Ponto' : 'Adicionar Novo Ponto' }}</h3>
-        <form [formGroup]="pontoForm" (ngSubmit)="salvarPonto()">
-
-            <!-- Nome do Ponto -->
-            <div class="form-group">
-                <label for="nome">Nome do Ponto</label>
-                <input type="text" id="nome" formControlName="nome" required>
-            </div>
-
-            <!-- Seleção de Materiais -->
-            <div class="form-group">
-                <label>Materiais Aceitos:</label>
-                <div class="checkbox-group" formArrayName="materiais">
-                    <label *ngFor="let material of materiaisDisponiveis; let i = index" class="checkbox-label">
-                        <input type="checkbox" [formControlName]="i">
-                        <span>{{ material }}</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Ações do Modal -->
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" (click)="fecharModal()">Cancelar</button>
-                <button type="submit" class="btn-primary" [disabled]="pontoForm.invalid">Salvar</button>
-            </div>
-
-        </form>
+<div class="mapa-container">
+  <div id="mapa" class="mapa"></div>
+  
+  <!-- Botão para centralizar no usuário -->
+  <button class="btn-centralizar" (click)="centralizarMapa()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  </button>
+  
+  <!-- Componente de cadastro de pontos -->
+  <app-cadastrar-ponto (pontoSalvo)="onPontoSalvo()"></app-cadastrar-ponto>
+  
+  <!-- Legenda do mapa -->
+  <div class="legenda">
+    <h3>Legenda</h3>
+    <div class="legenda-item">
+      <div class="marcador"></div>
+      <span>Ponto de Coleta</span>
     </div>
+    <div class="instrucoes">
+      <p>Clique no mapa para adicionar um novo ponto de coleta</p>
+      <p>Clique em um marcador para ver detalhes</p>
+    </div>
+  </div>
 </div>

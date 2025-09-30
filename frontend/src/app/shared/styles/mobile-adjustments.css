@@ -1,0 +1,110 @@
+/* Ajustes específicos para mobile */
+
+/* Ajustes para navegação mobile */
+@media (max-width: 767px) {
+  .navbar {
+    padding: 8px 12px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+  
+  .navbar-toggler {
+    padding: 6px;
+  }
+  
+  .navbar-collapse {
+    margin-top: 8px;
+  }
+  
+  .navbar-nav .nav-item {
+    margin-bottom: 5px;
+  }
+  
+  /* Ajustes para componentes específicos */
+  .mapa-container {
+    height: calc(100vh - 120px);
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    height: auto;
+    max-height: 50vh;
+    overflow-y: auto;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Ajustes para formulários em mobile */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-row > div {
+    width: 100%;
+    margin-right: 0;
+  }
+  
+  /* Ajustes para tabelas em mobile */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  /* Ajustes para cards em mobile */
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Ajustes para botões em mobile */
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-group .btn {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  /* Ajustes para modais em mobile */
+  .modal-container {
+    width: 95%;
+    max-height: 85vh;
+  }
+  
+  /* Ajustes para componentes específicos */
+  .registrar-material-container,
+  .validacao-cruzada-container,
+  .validacao-admin-container,
+  .pontos-usuario-container,
+  .recompensas-lista-container {
+    padding: 12px;
+  }
+  
+  /* Melhorias de usabilidade para touch */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Ajustes para inputs em mobile */
+  input, select, textarea {
+    font-size: 16px; /* Evita zoom automático em iOS */
+  }
+}
+
+/* Ajustes para orientação paisagem em dispositivos móveis */
+@media (max-width: 767px) and (orientation: landscape) {
+  .sidebar {
+    max-height: 40vh;
+  }
+  
+  .mapa-container {
+    height: calc(100vh - 100px);
+  }
+}

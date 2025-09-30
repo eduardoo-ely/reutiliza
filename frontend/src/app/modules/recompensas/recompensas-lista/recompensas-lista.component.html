@@ -1,0 +1,51 @@
+<div class="recompensas-container">
+  <div class="recompensas-header">
+    <h2>Recompensas Disponíveis</h2>
+    <div class="pontos-badge" *ngIf="pontosUsuario">
+      <span class="pontos-valor">{{ getPontosDisponiveis() }}</span>
+      <span class="pontos-label">pontos disponíveis</span>
+    </div>
+  </div>
+  
+  <div class="alert" [ngClass]="{'alert-success': tipoMensagem === 'sucesso', 'alert-danger': tipoMensagem === 'erro', 'alert-info': tipoMensagem === 'info'}" *ngIf="mensagem">
+    {{ mensagem }}
+  </div>
+  
+  <div class="loading-spinner" *ngIf="carregando">
+    <div class="spinner"></div>
+    <p>Carregando recompensas...</p>
+  </div>
+  
+  <div class="empty-state" *ngIf="!carregando && recompensas.length === 0">
+    <p>Não há recompensas disponíveis no momento. Volte mais tarde!</p>
+  </div>
+  
+  <div class="recompensas-grid" *ngIf="!carregando && recompensas.length > 0">
+    <div class="recompensa-card" *ngFor="let recompensa of recompensas">
+      <div class="recompensa-imagem" [style.background-image]="recompensa.imagem ? 'url(' + recompensa.imagem + ')' : 'url(/assets/images/reward-placeholder.jpg)'">
+        <div class="recompensa-tipo">{{ recompensa.tipo }}</div>
+      </div>
+      
+      <div class="recompensa-conteudo">
+        <h3 class="recompensa-titulo">{{ recompensa.nome }}</h3>
+        <p class="recompensa-descricao">{{ recompensa.descricao }}</p>
+        
+        <div class="recompensa-pontos">
+          <span class="pontos-icone">🏆</span>
+          <span class="pontos-necessarios">{{ recompensa.pontosNecessarios }} pontos</span>
+        </div>
+        
+        <div class="recompensa-validade" *ngIf="recompensa.validade">
+          Válido até: {{ recompensa.validade | date:'dd/MM/yyyy' }}
+        </div>
+      </div>
+      
+      <div class="recompensa-footer">
+        <button class="btn-resgatar" [disabled]="!podeResgatar(recompensa)" (click)="resgatarRecompensa(recompensa)">
+          <span *ngIf="podeResgatar(recompensa)">Resgatar</span>
+          <span *ngIf="!podeResgatar(recompensa)">Pontos insuficientes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

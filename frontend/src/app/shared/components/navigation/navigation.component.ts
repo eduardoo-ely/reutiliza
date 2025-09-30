@@ -14,8 +14,16 @@ import { UserService } from '../../../core/services/user.service';
         <span>Mapa</span>
       </a>
       <a routerLink="/recompensas" routerLinkActive="active" class="tab-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.3 5.7 2.9 2.9a2 2 0 0 1 0 2.8L12 20.6a2 2 0 0 1-2.8 0L2.8 11.4a2 2 0 0 1 0-2.8l2.9-2.9a2 2 0 0 1 2.8 0L12 9.1l3.5-3.5a2 2 0 0 1 2.8 0Z"/><path d="M12 20.6 12 22"/><path d="m18 15-4-4"/><path d="m6 15 4-4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.3 5.7 2.9 2.9a2 2 0 0 1 0 2.8L12 20.6a2 2 0 0 1-2.8 0L2.8 11.4a2 2 0 0 1 0-2.8l2.9-2.9a2 2 0 0 1 2.8 0L12 8.4l3.5-3.5a2 2 0 0 1 2.8 0Z"/></svg>
         <span>Recompensas</span>
+      </a>
+      <a routerLink="/pontos" routerLinkActive="active" class="tab-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+        <span>Pontos</span>
+      </a>
+      <a routerLink="/validacao-cruzada" routerLinkActive="active" class="tab-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>Validar</span>
       </a>
       <a routerLink="/perfil" routerLinkActive="active" class="tab-item">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

@@ -1,0 +1,154 @@
+.pontos-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pontos-header h2 {
+  color: #2e7d32;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #a5d6a7;
+  padding-bottom: 10px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #2e7d32;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.pontos-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.pontos-total {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pontos-valor {
+  font-size: 48px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.pontos-label {
+  font-size: 18px;
+  color: #616161;
+}
+
+.pontos-info {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 15px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #616161;
+}
+
+.info-value {
+  font-weight: 500;
+}
+
+.historico-section h3 {
+  margin-bottom: 15px;
+  color: #2e7d32;
+}
+
+.transacoes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transacao-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #e0e0e0;
+}
+
+.transacao-data {
+  width: 100px;
+  color: #757575;
+  font-size: 14px;
+}
+
+.transacao-descricao {
+  flex: 1;
+  padding: 0 15px;
+}
+
+.transacao-pontos {
+  font-weight: 500;
+  min-width: 100px;
+  text-align: right;
+}
+
+.pontos-ganho {
+  color: #2e7d32;
+}
+
+.pontos-gasto {
+  color: #d32f2f;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  color: #757575;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 600px) {
+  .pontos-container {
+    padding: 15px;
+  }
+  
+  .transacao-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .transacao-data {
+    width: 100%;
+  }
+  
+  .transacao-pontos {
+    width: 100%;
+    text-align: left;
+  }
+}
