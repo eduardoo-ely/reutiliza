@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
-import { PontoCrudService } from '../../services/ponto-crud.service';
-import { PontoColeta } from '../../../../models/ponto.models';
+import 'leaflet-routing-machine';
+import { PontoService } from '../../../../core/services/ponto.service';
+import { PontoColeta } from '../../../../models/ponto-coleta.model';
 import { CadastrarPontoComponent } from '../../components/cadastrar-ponto/cadastrar-ponto.component';
 
 @Component({
@@ -12,169 +13,174 @@ import { CadastrarPontoComponent } from '../../components/cadastrar-ponto/cadast
   templateUrl: './mapa-coleta.component.html',
   styleUrls: ['./mapa-coleta.component.css']
 })
-export class MapaColetaComponent implements OnInit {
-  private map!: L.Map;
-  private markers: L.Marker[] = [];
-  private userLocationMarker: L.Marker | null = null;
-  
-  constructor(private pontoCrudService: PontoCrudService) {}
+export class MapaColetaComponent implements AfterViewInit {
+  @ViewChild(CadastrarPontoComponent) cadastrarPontoComp!: CadastrarPontoComponent;
 
-  ngOnInit(): void {
+  map!: L.Map;
+  markersLayer: L.LayerGroup = L.layerGroup();
+  pontos: PontoColeta[] = [];
+  userLocation!: L.LatLng;
+
+  private routingControl: any = null;
+
+  materiaisDisponiveis = [
+    'Eletroeletrônicos', 'Móveis', 'Vidros', 'Óleo de Cozinha',
+    'Pneus', 'Metais e Ferros', 'Papel e Papelão'
+  ];
+
+  pontoIcon = L.icon({
+    iconUrl: 'assets/fabrica.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40]
+  });
+
+  userIcon = L.icon({
+    iconUrl: 'assets/localizacao-atual.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40]
+  });
+
+  constructor(private pontoService: PontoService) {}
+
+  ngAfterViewInit(): void {
     this.inicializarMapa();
-    this.carregarPontos();
-    this.obterLocalizacaoUsuario();
   }
 
-  private inicializarMapa(): void {
-    // Configuração inicial do mapa
-    this.map = L.map('mapa').setView([-23.5505, -46.6333], 12);
-    
-    // Adiciona o tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
-
-    // Adiciona evento de clique no mapa para criar novos pontos
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      this.abrirModalCadastro(e.latlng);
-    });
-  }
-
-  private carregarPontos(): void {
-    this.pontoCrudService.getAll().subscribe(pontos => {
-      // Limpa os marcadores existentes
-      this.limparMarcadores();
-      
-      // Adiciona os novos marcadores
-      pontos.forEach(ponto => {
-        this.adicionarMarcador(ponto);
-      });
-    });
-  }
-
-  private adicionarMarcador(ponto: PontoColeta): void {
-    const marker = L.marker([ponto.latitude, ponto.longitude])
-      .addTo(this.map)
-      .bindPopup(this.criarConteudoPopup(ponto))
-      .on('click', () => {
-        // Armazena o ponto selecionado para possível edição
-        marker.openPopup();
-      });
-    
-    this.markers.push(marker);
-  }
-
-  private criarConteudoPopup(ponto: PontoColeta): L.Popup {
-    const container = L.DomUtil.create('div', 'popup-container');
-    
-    // Título
-    const titulo = L.DomUtil.create('h3', 'popup-titulo', container);
-    titulo.textContent = ponto.nome;
-    
-    // Materiais
-    const materiaisContainer = L.DomUtil.create('div', 'popup-materiais', container);
-    const materiaisTitulo = L.DomUtil.create('strong', '', materiaisContainer);
-    materiaisTitulo.textContent = 'Materiais aceitos:';
-    
-    const materiaisLista = L.DomUtil.create('ul', '', materiaisContainer);
-    ponto.materiais.forEach(material => {
-      const item = L.DomUtil.create('li', '', materiaisLista);
-      item.textContent = material;
-    });
-    
-    // Botões de ação
-    const acoesContainer = L.DomUtil.create('div', 'popup-acoes', container);
-    
-    const btnEditar = L.DomUtil.create('button', 'btn-editar', acoesContainer);
-    btnEditar.textContent = 'Editar';
-    L.DomEvent.on(btnEditar, 'click', (e) => {
-      L.DomEvent.stopPropagation(e);
-      this.abrirModalEdicao(ponto);
-    });
-    
-    const btnExcluir = L.DomUtil.create('button', 'btn-excluir', acoesContainer);
-    btnExcluir.textContent = 'Excluir';
-    L.DomEvent.on(btnExcluir, 'click', (e) => {
-      L.DomEvent.stopPropagation(e);
-      this.excluirPonto(ponto._id);
-    });
-    
-    return L.popup().setContent(container);
-  }
-
-  private limparMarcadores(): void {
-    this.markers.forEach(marker => marker.remove());
-    this.markers = [];
-  }
-
-  // Métodos para interagir com o componente de cadastro
-  abrirModalCadastro(latlng: L.LatLng): void {
-    const cadastrarPontoComponent = document.querySelector('app-cadastrar-ponto') as any;
-    if (cadastrarPontoComponent) {
-      cadastrarPontoComponent.abrirModalParaCriar(latlng);
-    }
-  }
-
-  abrirModalEdicao(ponto: PontoColeta): void {
-    const cadastrarPontoComponent = document.querySelector('app-cadastrar-ponto') as any;
-    if (cadastrarPontoComponent) {
-      cadastrarPontoComponent.abrirModalParaEditar(ponto);
-    }
-  }
-
-  excluirPonto(id: string): void {
-    if (confirm('Tem certeza que deseja excluir este ponto de coleta?')) {
-      this.pontoCrudService.delete(id).subscribe(() => {
-        this.carregarPontos();
-      });
-    }
-  }
-
-  // Método chamado quando um ponto é salvo no componente de cadastro
-  onPontoSalvo(): void {
-    this.carregarPontos();
-  }
-
-  // Obter localização atual do usuário
-  private obterLocalizacaoUsuario(): void {
+  inicializarMapa(): void {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          
-          // Centraliza o mapa na posição do usuário
-          this.map.setView([lat, lng], 15);
-          
-          // Adiciona um marcador na posição do usuário
-          if (this.userLocationMarker) {
-            this.userLocationMarker.remove();
-          }
-          
-          // Cria um ícone personalizado para a localização do usuário
-          const userIcon = L.divIcon({
-            className: 'user-location-marker',
-            html: '<div class="pulse"></div>',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-          });
-          
-          this.userLocationMarker = L.marker([lat, lng], { icon: userIcon })
-            .addTo(this.map)
-            .bindPopup('Você está aqui!')
-            .openPopup();
-        },
-        (error) => {
-          console.error('Erro ao obter localização:', error);
-        }
+          pos => this.criarMapa(pos.coords.latitude, pos.coords.longitude),
+          () => this.criarMapa(-27.1004, -52.6152)
       );
     } else {
-      console.error('Geolocalização não é suportada por este navegador.');
+      this.criarMapa(-27.1004, -52.6152);
     }
   }
 
-  // Centralizar mapa na localização do usuário
-  centralizarMapa(): void {
-    this.obterLocalizacaoUsuario();
+  private criarMapa(lat: number, lng: number): void {
+    this.userLocation = L.latLng(lat, lng);
+    this.map = L.map('map', { zoomControl: true }).setView(this.userLocation, 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(this.map);
+
+    L.marker(this.userLocation, { icon: this.userIcon })
+        .bindPopup('Você está aqui!')
+        .addTo(this.map);
+
+    this.markersLayer.addTo(this.map);
+
+    // Clique no mapa abre modal de novo ponto
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      this.cadastrarPontoComp?.abrirModalParaCriar(e.latlng);
+    });
+
+    // Recarrega pontos ao salvar
+    this.cadastrarPontoComp?.pontoSalvo.subscribe(() => this.carregarPontos());
+
+    // Carrega pontos do banco
+    this.carregarPontos();
   }
+
+  recenterMap(): void {
+    if (this.map && this.userLocation) {
+      this.map.flyTo(this.userLocation, 15);
+    }
+  }
+
+  carregarPontos(): void {
+    this.pontoService.getAll().subscribe({
+      next: (data: PontoColeta[]) => {
+        this.pontos = data || [];
+        this.renderizarPontos();
+      },
+      error: err => console.error('Erro ao carregar pontos:', err)
+    });
+  }
+
+  private renderizarPontos(): void {
+    this.markersLayer.clearLayers();
+
+    this.pontos.forEach(ponto => {
+      const popupContent = `
+    <b>${ponto.nome}</b><br>
+    <b>Endereço:</b> ${ponto.endereco}<br>
+    <b>Materiais:</b> ${ponto.materiais.join(', ')}<br>
+    <b>Horário:</b> ${ponto.horarioFuncionamento || 'Não informado'}<br>
+    ${ponto.telefone ? `<b>Telefone:</b> ${ponto.telefone}<br>` : ''}
+    ${ponto.email ? `<b>Email:</b> ${ponto.email}<br>` : ''}
+    `;
+
+
+      const marker = L.marker([ponto.latitude, ponto.longitude], { icon: this.pontoIcon })
+          .bindPopup(popupContent)
+          .on('dblclick', () => this.cadastrarPontoComp?.abrirModalParaEditar(ponto));
+
+      marker.addTo(this.markersLayer);
+    });
+  }
+
+
+  tracarRotaParaMaterial(material: string): void {
+    if (!this.userLocation) return;
+
+    const candidatos = this.pontos.filter(p => p.materiais.includes(material));
+    if (!candidatos.length) {
+      alert(`Nenhum ponto de coleta encontrado para "${material}"`);
+      return;
+    }
+
+    // escolhe o mais próximo
+    let destino = candidatos[0];
+    let menor = this.userLocation.distanceTo(L.latLng(destino.latitude, destino.longitude));
+    candidatos.forEach(p => {
+      const d = this.userLocation.distanceTo(L.latLng(p.latitude, p.longitude));
+      if (d < menor) { menor = d; destino = p; }
+    });
+
+    this.tracarRotaParaPonto(destino);
+  }
+
+  tracarRotaParaPonto(ponto: PontoColeta): void {
+    if (!this.userLocation) return;
+
+    const destinoLatLng = L.latLng(ponto.latitude, ponto.longitude);
+
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+      this.routingControl = null;
+    }
+
+    this.routingControl = (L.Routing.control as any)({
+      waypoints: [this.userLocation, destinoLatLng],
+      show: false,
+      addWaypoints: false,
+      createMarker: () => null,
+      lineOptions: {
+        styles: [
+          { color: '#1b5e20', opacity: 0.35, weight: 10, lineCap: 'round' },
+          { color: '#28a745', opacity: 1, weight: 6, lineCap: 'round' }
+        ],
+        extendToWaypoints: true,
+        missingRouteTolerance: 0
+      }
+    }).addTo(this.map);
+
+  }
+
+  limparRota(): void {
+    if (this.routingControl) {
+      this.map.removeControl(this.routingControl);
+      this.routingControl = null;
+    }
+  }
+
+  onClickReutiliza(): void {
+    console.log('ReUtiliza clicado!');
+  }
+
 }

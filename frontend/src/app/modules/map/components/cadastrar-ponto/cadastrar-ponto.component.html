@@ -1,44 +1,51 @@
-<!-- Modal de Cadastro/Edição de Ponto de Coleta -->
-<div class="modal" [class.modal-aberto]="modalAberto">
-  <div class="modal-conteudo">
-    <h2>{{ pontoEmEdicao ? 'Editar' : 'Cadastrar' }} Ponto de Coleta</h2>
-    
-    <form [formGroup]="pontoForm" (ngSubmit)="salvarPonto()">
-      <div class="form-group">
-        <label for="nome">Nome do Local</label>
-        <input type="text" id="nome" formControlName="nome" placeholder="Ex: Ecoponto Vila Mariana">
-        <div *ngIf="pontoForm.get('nome')?.invalid && pontoForm.get('nome')?.touched" class="erro-validacao">
-          Nome é obrigatório e deve ter pelo menos 3 caracteres
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label>Materiais Aceitos</label>
-        <div class="lista-materiais" formArrayName="materiais">
-          <div *ngFor="let material of materiaisDisponiveis; let i = index" class="material-item">
-            <label>
-              <input type="checkbox" [formControlName]="i">
-              {{ material }}
-            </label>
-          </div>
-        </div>
-      </div>
-      
-      <div class="form-group coordenadas">
-        <div>
-          <label for="latitude">Latitude</label>
-          <input type="number" id="latitude" formControlName="latitude" readonly>
-        </div>
-        <div>
-          <label for="longitude">Longitude</label>
-          <input type="number" id="longitude" formControlName="longitude" readonly>
-        </div>
-      </div>
-      
-      <div class="acoes">
-        <button type="button" class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
-        <button type="submit" class="btn-salvar" [disabled]="pontoForm.invalid">Salvar</button>
-      </div>
-    </form>
-  </div>
+<div class="modal-overlay" *ngIf="modalAberto">
+    <div class="modal-content">
+        <h3>{{ pontoEmEdicao ? 'Editar Ponto' : 'Adicionar Novo Ponto' }}</h3>
+
+        <form [formGroup]="pontoForm" (ngSubmit)="salvarPonto()">
+            <!-- Nome do Ponto -->
+            <div class="form-group">
+                <label for="nome">Nome do Ponto</label>
+                <input type="text" id="nome" formControlName="nome" required>
+            </div>
+
+            <!-- Materiais Aceitos -->
+            <div class="form-group">
+                <label>Materiais Aceitos:</label>
+                <div class="checkbox-group" formArrayName="materiais">
+                    <label *ngFor="let material of materiaisDisponiveis; let i = index" class="checkbox-label">
+                        <input type="checkbox" [formControlName]="i">
+                        <span>{{ material }}</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Endereço, latitude, longitude, telefone, email, horário -->
+            <div class="form-group">
+                <label for="endereco">Endereço</label>
+                <input type="text" id="endereco" formControlName="endereco" required>
+            </div>
+
+            <div class="form-group">
+                <label for="horario">Horário de Funcionamento</label>
+                <input type="text" id="horario" formControlName="horarioFuncionamento" required>
+            </div>
+
+            <div class="form-group">
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" formControlName="telefone">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email">
+            </div>
+
+            <!-- Ações -->
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" (click)="fecharModal()">Cancelar</button>
+                <button type="submit" class="btn-primary" [disabled]="pontoForm.invalid">Salvar</button>
+            </div>
+        </form>
+    </div>
 </div>

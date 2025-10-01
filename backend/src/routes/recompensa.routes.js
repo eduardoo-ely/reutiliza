@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Recompensa = require('../models/recompensa.model');
-const User = require('../models/user.model');
+const Recompensa = require('../models/Recompensa');
+const User = require('../models/UserModel');
 
 // Rota para obter todas as recompensas
 router.get('/', async (req, res) => {

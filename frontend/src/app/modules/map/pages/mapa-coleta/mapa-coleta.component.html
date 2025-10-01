@@ -1,27 +1,34 @@
-<div class="mapa-container">
-  <div id="mapa" class="mapa"></div>
-  
-  <!-- Botão para centralizar no usuário -->
-  <button class="btn-centralizar" (click)="centralizarMapa()">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"></circle>
-      <circle cx="12" cy="12" r="3"></circle>
-    </svg>
-  </button>
-  
-  <!-- Componente de cadastro de pontos -->
-  <app-cadastrar-ponto (pontoSalvo)="onPontoSalvo()"></app-cadastrar-ponto>
-  
-  <!-- Legenda do mapa -->
-  <div class="legenda">
-    <h3>Legenda</h3>
-    <div class="legenda-item">
-      <div class="marcador"></div>
-      <span>Ponto de Coleta</span>
+<div class="map-wrapper">
+    <!-- Mapa -->
+    <div id="map"></div>
+
+    <!-- Top Panel / Busca (sobreposto) -->
+    <div class="top-panel">
+        <div class="search-box" (click)="onClickReutiliza()">
+            <span class="search-icon">🔍</span>
+            <span class="search-text">ReUtiliza</span>
+        </div>
     </div>
-    <div class="instrucoes">
-      <p>Clique no mapa para adicionar um novo ponto de coleta</p>
-      <p>Clique em um marcador para ver detalhes</p>
+
+    <!-- Menu lateral inferior: materiais + limpar + recenter -->
+    <div class="material-menu">
+        <!-- Botões de materiais -->
+        <button *ngFor="let material of materiaisDisponiveis"
+                class="material-btn"
+                title="{{material}}"
+                (click)="tracarRotaParaMaterial(material)">
+            <img>
+        </button>
+
+        <!-- Limpar rota -->
+        <button class="material-btn clear-btn" title="Limpar Rota" (click)="limparRota()">✖</button>
+
+        <!-- Recenter / Bússola -->
+        <button class="material-btn recenter-btn" (click)="recenterMap()">
+            <img src="assets/bussola.png" alt="Recenter">
+        </button>
     </div>
-  </div>
+
+    <!-- Modal de cadastro de ponto -->
+    <app-cadastrar-ponto></app-cadastrar-ponto>
 </div>

@@ -6,7 +6,7 @@
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background-image: url('/frontend/src/assets/fundo-login.jpg');
+  background-image: url('/assets/fundo-login.jpg');
   background-size: cover;
   background-position: center;
   padding: 20px;
@@ -130,4 +130,20 @@
   color: var(--error-red);
   font-size: 12px;
   margin-top: 4px;
+}
+
+@media (max-width: 500px) {
+  .login-container {
+    padding: 30px 20px;
+    width: 100%;
+  }
+
+  .login-header h1 {
+    font-size: 20px;
+  }
+
+  .btn-submit {
+    padding: 12px;
+    font-size: 14px;
+  }
 }

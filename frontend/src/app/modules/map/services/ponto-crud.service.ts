@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PontoColeta } from '../../../models/ponto.models';
+import { PontoColeta } from '../../../models/ponto-coleta.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({

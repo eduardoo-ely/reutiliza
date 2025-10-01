@@ -1,10 +1,9 @@
-// components/cadastrar-ponto/cadastrar-ponto.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import * as L from 'leaflet';
 import { PontoService } from '../../../../core/services/ponto.service';
-import { PontoColeta } from '../../../../models/ponto.models';
+import { PontoColeta } from '../../../../models/ponto-coleta.model';
 
 @Component({
     selector: 'app-cadastrar-ponto',
@@ -17,24 +16,27 @@ export class CadastrarPontoComponent {
     modalAberto = false;
     pontoForm!: FormGroup;
     pontoEmEdicao: PontoColeta | null = null;
-    readonly materiaisDisponiveis = ['Eletroeletrônicos', 'Móveis', 'Vidros', 'Óleo de Cozinha', 'Pneus', 'Metais e Ferros', 'Papel e Papelão'];
+    readonly materiaisDisponiveis = [
+        'Eletroeletrônicos', 'Móveis', 'Vidros', 'Óleo de Cozinha',
+        'Pneus', 'Metais e Ferros', 'Papel e Papelão'
+    ];
 
-    // Avisa o "componente pai" (o mapa) que um ponto foi salvo
     @Output() pontoSalvo = new EventEmitter<void>();
 
-    constructor(
-        private pontoService: PontoService,
-        private fb: FormBuilder
-    ) {
+    constructor(private pontoService: PontoService, private fb: FormBuilder) {
         this.criarFormulario();
     }
 
     criarFormulario(): void {
         this.pontoForm = this.fb.group({
             nome: ['', [Validators.required, Validators.minLength(3)]],
-            materiais: this.fb.array(this.materiaisDisponiveis.map(() => new FormControl(false))),
+            endereco: ['', Validators.required],
             latitude: [0, Validators.required],
-            longitude: [0, Validators.required]
+            longitude: [0, Validators.required],
+            materiais: this.fb.array(this.materiaisDisponiveis.map(() => new FormControl(false))),
+            horarioFuncionamento: ['', Validators.required],
+            telefone: [''],
+            email: ['']
         });
     }
 
@@ -51,20 +53,20 @@ export class CadastrarPontoComponent {
     abrirModalParaEditar(ponto: PontoColeta): void {
         this.pontoEmEdicao = ponto;
         this.criarFormulario();
-        
-        // Preenche o formulário com os dados do ponto
-        this.pontoForm.patchValue({
-            nome: ponto.nome,
-            latitude: ponto.latitude,
-            longitude: ponto.longitude
+        const materiaisArray = this.pontoForm.get('materiais') as FormArray;
+
+        materiaisArray.controls.forEach((ctrl, i) => {
+            ctrl.setValue(ponto.materiais.includes(this.materiaisDisponiveis[i]));
         });
 
-        // Marca os materiais que o ponto coleta
-        const materiaisArray = this.pontoForm.get('materiais') as FormArray;
-        this.materiaisDisponiveis.forEach((material, index) => {
-            if (ponto.materiais.includes(material)) {
-                materiaisArray.at(index).setValue(true);
-            }
+        this.pontoForm.patchValue({
+            nome: ponto.nome,
+            endereco: ponto.endereco,
+            latitude: ponto.latitude,
+            longitude: ponto.longitude,
+            horarioFuncionamento: ponto.horarioFuncionamento,
+            telefone: ponto.telefone || '',
+            email: ponto.email || ''
         });
 
         this.modalAberto = true;
@@ -81,28 +83,33 @@ export class CadastrarPontoComponent {
         const formValue = this.pontoForm.value;
         const materiaisSelecionados = this.materiaisDisponiveis.filter((_, i) => formValue.materiais[i]);
 
-        if (this.pontoEmEdicao) {
-            // ATUALIZA um ponto
-            const pontoAtualizado = {
-                nome: formValue.nome,
-                materiais: materiaisSelecionados
-            };
-            this.pontoService.update(this.pontoEmEdicao._id, pontoAtualizado).subscribe(() => {
-                this.pontoSalvo.emit(); // Avisa o mapa
+        const ponto: PontoColeta = {
+            ...(this.pontoEmEdicao?._id && { _id: this.pontoEmEdicao._id }),
+            nome: formValue.nome,
+            endereco: formValue.endereco,
+            latitude: formValue.latitude,
+            longitude: formValue.longitude,
+            materiais: materiaisSelecionados,
+            horarioFuncionamento: formValue.horarioFuncionamento,
+            telefone: formValue.telefone,
+            email: formValue.email,
+            ativo: true
+        };
+
+        if (this.pontoEmEdicao?._id) {
+            this.pontoService.update(this.pontoEmEdicao._id, ponto).subscribe(() => {
+                this.pontoSalvo.emit();
                 this.fecharModal();
             });
         } else {
-            // CRIA um novo ponto
-            const novoPonto = {
-                nome: formValue.nome,
-                materiais: materiaisSelecionados,
-                latitude: formValue.latitude,
-                longitude: formValue.longitude,
-            };
-            this.pontoService.save(novoPonto).subscribe(() => {
-                this.pontoSalvo.emit(); // Avisa o mapa
+            this.pontoService.create(ponto).subscribe(() => {
+                this.pontoSalvo.emit();
                 this.fecharModal();
             });
         }
+    }
+
+    get materiaisControls(): FormArray {
+        return this.pontoForm.get('materiais') as FormArray;
     }
 }

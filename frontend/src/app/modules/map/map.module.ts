@@ -2,19 +2,18 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MapRoutingModule } from './map-routing.module';
-import { MapViewComponent } from './pages/map-view/map-view.component';
 import { MapaColetaComponent } from './pages/mapa-coleta/mapa-coleta.component';
 import { CadastrarPontoComponent } from './components/cadastrar-ponto/cadastrar-ponto.component';
+import {RegistrarMaterialComponent} from "./components/registrar-material/registrar-material.component";
 
 @NgModule({
-  declarations: [],
   imports: [
     CommonModule,
     MapRoutingModule,
     ReactiveFormsModule,
-    MapViewComponent,
-    MapaColetaComponent,
-    CadastrarPontoComponent
+    RegistrarMaterialComponent,
+    CadastrarPontoComponent,
+    MapaColetaComponent
   ]
 })
 export class MapModule { }

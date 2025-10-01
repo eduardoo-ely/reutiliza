@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './modules/auth/pages/login/login.component';
 import { MapaColetaComponent } from './modules/map/pages/mapa-coleta/mapa-coleta.component';
 import { PerfilComponent } from './modules/profile/pages/perfil/perfil.component';
-// Removendo importação não utilizada
 import { ValidacaoCruzadaComponent } from './modules/validacao/validacao-cruzada/validacao-cruzada.component';
 import { ValidacaoAdminComponent } from './modules/admin/validacao-admin/validacao-admin.component';
 import { PontosUsuarioComponent } from './modules/usuario/pontos-usuario/pontos-usuario.component';

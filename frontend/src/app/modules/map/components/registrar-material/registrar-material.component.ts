@@ -22,15 +22,16 @@ export class RegistrarMaterialComponent implements OnInit {
   materialForm: FormGroup;
   tiposMateriais = ['Papel', 'Plástico', 'Vidro', 'Metal', 'Eletrônico', 'Óleo', 'Outros'];
   unidades = ['kg', 'litros', 'unidades'];
-  usuarioId: string = '';
+  usuarioNome = '';
+  usuarioId = '';
   isSubmitting = false;
   mensagemSucesso = '';
   mensagemErro = '';
 
   constructor(
-    private fb: FormBuilder,
-    private materialService: MaterialRecicladoService,
-    private authService: AuthService
+      private fb: FormBuilder,
+      private materialService: MaterialRecicladoService,
+      private authService: AuthService
   ) {
     this.materialForm = this.criarFormulario();
   }
@@ -39,6 +40,7 @@ export class RegistrarMaterialComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(user => {
       if (user) {
         this.usuarioId = user._id;
+        this.usuarioNome = user.nome || '';
       }
     });
   }
@@ -59,20 +61,13 @@ export class RegistrarMaterialComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.materialForm.reset({
-      material: '',
-      quantidade: '',
-      unidade: 'kg',
-      observacoes: ''
-    });
+    this.materialForm.reset({ material: '', quantidade: '', unidade: 'kg', observacoes: '' });
     this.mensagemSucesso = '';
     this.mensagemErro = '';
   }
 
   registrarMaterial(): void {
-    if (this.materialForm.invalid || !this.pontoColeta || !this.usuarioId) {
-      return;
-    }
+    if (this.materialForm.invalid || !this.pontoColeta || !this.usuarioId) return;
 
     this.isSubmitting = true;
     this.mensagemErro = '';
@@ -80,7 +75,7 @@ export class RegistrarMaterialComponent implements OnInit {
 
     const novoMaterial: MaterialReciclado = {
       usuarioId: this.usuarioId,
-      pontoColetaId: this.pontoColeta._id,
+      pontoColetaId: this.pontoColeta._id!,
       material: this.materialForm.value.material,
       quantidade: this.materialForm.value.quantidade,
       unidade: this.materialForm.value.unidade,
@@ -92,14 +87,14 @@ export class RegistrarMaterialComponent implements OnInit {
     this.materialService.registrarMaterial(novoMaterial).subscribe({
       next: (material) => {
         this.isSubmitting = false;
-        this.mensagemSucesso = 'Material registrado com sucesso! Você receberá pontos após a validação.';
+        this.mensagemSucesso = `Material registrado com sucesso por ${this.usuarioNome}!`;
         this.materialRegistrado.emit(material);
         setTimeout(() => this.fecharModal(), 2000);
       },
       error: (err) => {
         this.isSubmitting = false;
         this.mensagemErro = 'Erro ao registrar material. Tente novamente.';
-        console.error('Erro ao registrar material:', err);
+        console.error(err);
       }
     });
   }

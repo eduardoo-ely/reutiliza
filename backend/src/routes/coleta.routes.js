@@ -1,47 +1,57 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const PontoColeta = require("../models/pontoColeta.model");
+const Ponto = require('../models/PontoColeta');
 
-// GET /api/pontos
-router.get("/", async (req, res) => {
+// GET todos os pontos
+router.get('/', async (req, res) => {
     try {
-        const pontos = await PontoColeta.aggregate([
-            {
-                $lookup: {
-                    from: "pontos_residuo_associacao",
-                    localField: "_id",
-                    foreignField: "ponto_id",
-                    as: "associacoes",
-                },
-            },
-            {
-                $lookup: {
-                    from: "materiais",
-                    let: { assocIds: "$associacoes.residuo_id" },
-                    pipeline: [
-                        { $match: { $expr: { $in: ["$_id", "$$assocIds"] } } },
-                        { $project: { nome: 1, _id: 0 } },
-                    ],
-                    as: "materiais",
-                },
-            },
-            {
-                $project: {
-                    _id: 1,
-                    nome: 1,
-                    endereco: 1,
-                    horario_funcionamento: 1,
-                    latitude: 1,
-                    longitude: 1,
-                    materiais: "$materiais.nome",
-                },
-            },
-        ]);
-
-        res.json(pontos);
+        const pontos = await Ponto.find();
+        const formatados = pontos.map(p => ({
+            _id: p._id,
+            nome: p.nome,
+            endereco: p.endereco,
+            latitude: p.latitude,
+            longitude: p.longitude,
+            materiais: p.materiais,
+            horarioFuncionamento: p.horarioFuncionamento,
+            telefone: p.telefone,
+            email: p.email,
+            ativo: p.ativo
+        }));
+        res.json(formatados);
     } catch (err) {
-        console.error("Erro no GET /api/pontos:", err);
-        res.status(500).json({ message: "Erro ao buscar pontos de coleta." });
+        res.status(500).json({ error: 'Erro ao buscar pontos de coleta' });
+    }
+});
+
+// POST criar ponto
+router.post('/', async (req, res) => {
+    try {
+        const ponto = new Ponto(req.body);
+        await ponto.save();
+        res.status(201).json(ponto);
+    } catch (err) {
+        res.status(400).json({ error: 'Erro ao criar ponto' });
+    }
+});
+
+// PUT atualizar ponto
+router.put('/:id', async (req, res) => {
+    try {
+        const ponto = await Ponto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(ponto);
+    } catch (err) {
+        res.status(400).json({ error: 'Erro ao atualizar ponto' });
+    }
+});
+
+// DELETE remover ponto
+router.delete('/:id', async (req, res) => {
+    try {
+        await Ponto.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Ponto removido' });
+    } catch (err) {
+        res.status(400).json({ error: 'Erro ao remover ponto' });
     }
 });
 

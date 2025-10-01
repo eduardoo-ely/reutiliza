@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 let User, PontoColeta, MaterialReciclado, Recompensa, ValidacaoCruzada;
 
 try {
-  User = require('../models/user.model');
+  User = require('../models/UserModel');
 } catch (error) {
   console.log('Usando modelo User alternativo');
 }

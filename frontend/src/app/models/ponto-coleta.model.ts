@@ -4,9 +4,9 @@ export interface PontoColeta {
   endereco: string;
   latitude: number;
   longitude: number;
-  tiposMateriais: string[];
-  horarioFuncionamento?: string;
+  materiais: string[];
+  horarioFuncionamento: string;
   telefone?: string;
   email?: string;
-  ativo: boolean;
+  ativo?: boolean;
 }

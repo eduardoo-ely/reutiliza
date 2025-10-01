@@ -1,65 +1,40 @@
 <div class="modal-overlay" *ngIf="isVisible">
-  <div class="modal-container">
-    <div class="modal-header">
-      <h2>Registrar Material Reciclado</h2>
-      <button class="close-button" (click)="fecharModal()">×</button>
-    </div>
-    
-    <div class="modal-body">
-      <div *ngIf="pontoColeta" class="ponto-info">
-        <h3>{{ pontoColeta.nome }}</h3>
-        <p>{{ pontoColeta.endereco }}</p>
-      </div>
-      
-      <form [formGroup]="materialForm" (ngSubmit)="registrarMaterial()">
-        <div class="form-group">
-          <label for="material">Tipo de Material</label>
-          <select id="material" formControlName="material" class="form-control">
-            <option value="" disabled>Selecione o material</option>
-            <option *ngFor="let tipo of tiposMateriais" [value]="tipo">{{ tipo }}</option>
-          </select>
-          <div class="error-message" *ngIf="materialForm.get('material')?.invalid && materialForm.get('material')?.touched">
-            Material é obrigatório
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="quantidade">Quantidade</label>
-            <input type="number" id="quantidade" formControlName="quantidade" class="form-control" step="0.1" min="0.1">
-            <div class="error-message" *ngIf="materialForm.get('quantidade')?.invalid && materialForm.get('quantidade')?.touched">
-              Quantidade válida é obrigatória
+    <div class="modal-content">
+        <h3>Registrar Material - {{ pontoColeta?.nome }}</h3>
+
+        <form [formGroup]="materialForm" (ngSubmit)="registrarMaterial()">
+            <div class="form-group">
+                <label>Material</label>
+                <select formControlName="material" required>
+                    <option value="" disabled>Selecione...</option>
+                    <option *ngFor="let tipo of tiposMateriais" [value]="tipo">{{ tipo }}</option>
+                </select>
             </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="unidade">Unidade</label>
-            <select id="unidade" formControlName="unidade" class="form-control">
-              <option *ngFor="let unidade of unidades" [value]="unidade">{{ unidade }}</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="observacoes">Observações</label>
-          <textarea id="observacoes" formControlName="observacoes" class="form-control" rows="3"></textarea>
-        </div>
-        
-        <div class="alert alert-success" *ngIf="mensagemSucesso">{{ mensagemSucesso }}</div>
-        <div class="alert alert-danger" *ngIf="mensagemErro">{{ mensagemErro }}</div>
-        
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="materialForm.invalid || isSubmitting">
-            <span *ngIf="isSubmitting">Registrando...</span>
-            <span *ngIf="!isSubmitting">Registrar Material</span>
-          </button>
-        </div>
-      </form>
+
+            <div class="form-group">
+                <label>Quantidade</label>
+                <input type="number" formControlName="quantidade" required>
+            </div>
+
+            <div class="form-group">
+                <label>Unidade</label>
+                <select formControlName="unidade">
+                    <option *ngFor="let u of unidades" [value]="u">{{ u }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Observações</label>
+                <textarea formControlName="observacoes"></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" (click)="fecharModal()">Cancelar</button>
+                <button type="submit" class="btn-primary" [disabled]="materialForm.invalid || isSubmitting">Registrar</button>
+            </div>
+
+            <p class="success-msg" *ngIf="mensagemSucesso">{{ mensagemSucesso }}</p>
+            <p class="error-msg" *ngIf="mensagemErro">{{ mensagemErro }}</p>
+        </form>
     </div>
-    
-    <div class="modal-footer">
-      <p class="info-text">Após o registro, seu material passará por validação e você receberá pontos!</p>
-    </div>
-  </div>
 </div>

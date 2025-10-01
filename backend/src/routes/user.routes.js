@@ -1,34 +1,35 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const User = require("../models/user.model");
+const User = require("../models/UserModel");
 
-// --- ROTA DE REGISTO (COM HASHING) ---
+// --- ROTA DE REGISTRO ---
 router.post("/register", async (req, res) => {
     try {
         const { email, senha, nome } = req.body;
 
-        // validação básica
+        // Validação básica
         if (!email || !senha || !nome) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Preencha todos os campos." });
+            return res.status(400).json({
+                success: false,
+                message: "Preencha todos os campos."
+            });
         }
 
-        // verificar se o email já existe
+        // Verificar se o e-mail já existe
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({
                 success: false,
-                message: "Este e-mail já está registado.",
+                message: "Este e-mail já está registrado.",
             });
         }
 
-        // hash da senha
+        // Hash da senha
         const salt = await bcrypt.genSalt(10);
         const senhaComHash = await bcrypt.hash(senha, salt);
 
-        // criar utilizador
+        // Criar usuário
         const newUser = new User({ nome, email, senha: senhaComHash });
         await newUser.save();
 
@@ -38,43 +39,43 @@ router.post("/register", async (req, res) => {
             user: { id: newUser._id, nome: newUser.nome, email: newUser.email },
         });
     } catch (error) {
-        console.error("Erro no register:", error);
-        res
-            .status(500)
-            .json({ success: false, message: "Erro ao registar utilizador." });
+        console.error("Erro no registro:", error);
+        res.status(500).json({ success: false, message: "Erro ao registrar usuário." });
     }
 });
 
-// --- ROTA DE LOGIN (COM HASHING E MENSAGENS ESPECÍFICAS) ---
+// --- ROTA DE LOGIN ---
 router.post("/login", async (req, res) => {
     try {
         const { email, senha } = req.body;
 
-        // validação básica
+        // Validação básica
         if (!email || !senha) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Preencha todos os campos." });
+            return res.status(400).json({
+                success: false,
+                message: "Preencha todos os campos."
+            });
         }
 
-        // procurar utilizador
+        // Procurar usuário
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "Nenhum utilizador encontrado com este e-mail.",
+                message: "Usuário ou senha incorretos.", // mais genérico
             });
         }
 
-        // validar senha
+        // Validar senha
         const senhaValida = await bcrypt.compare(senha, user.senha);
         if (!senhaValida) {
-            return res
-                .status(401)
-                .json({ success: false, message: "Senha incorreta." });
+            return res.status(401).json({
+                success: false,
+                message: "Usuário ou senha incorretos.", // mais genérico
+            });
         }
 
-        // retorno seguro (não envia senha!)
+        // Retorno seguro (não envia senha)
         const userToReturn = {
             id: user._id,
             email: user.email,

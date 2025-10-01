@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
+// Primeiro o schema
 const userSchema = new mongoose.Schema({
   nome: {
     type: String,
@@ -33,24 +34,19 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Hash da senha antes de salvar
+// Hooks, métodos e etc aqui
 userSchema.pre('save', async function(next) {
   if (!this.isModified('senha')) return next();
-  
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.senha = await bcrypt.hash(this.senha, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.senha = await bcrypt.hash(this.senha, salt);
+  next();
 });
 
-// Método para verificar senha
 userSchema.methods.verificarSenha = async function(senha) {
   return await bcrypt.compare(senha, this.senha);
 };
 
-const User = mongoose.model('User', userSchema);
+// Depois cria o modelo
+const User = mongoose.model('Usuario', userSchema, 'usuarios');
 
 module.exports = User;

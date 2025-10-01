@@ -1,29 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PontoColeta } from '../../models/ponto.models';
+import { PontoColeta } from '../../models/ponto-coleta.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PontoService {
-    private readonly apiUrl = 'http://localhost:3000/api/pontos';
+    private baseUrl = 'http://100.111.131.103:3000/api/pontos';
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {}
 
+    // Buscar todos os pontos
     getAll(): Observable<PontoColeta[]> {
-        return this.http.get<PontoColeta[]>(this.apiUrl);
+        return this.http.get<PontoColeta[]>(this.baseUrl);
     }
 
-    save(pontoData: { nome: any; materiais: string[]; latitude: any; longitude: any }): Observable<PontoColeta> {
-        return this.http.post<PontoColeta>(this.apiUrl, pontoData);
+    // Buscar ponto por ID (pode ser útil na edição)
+    getById(id: string): Observable<PontoColeta> {
+        return this.http.get<PontoColeta>(`${this.baseUrl}/${id}`);
     }
 
-    update(id: string, pontoData: Partial<PontoColeta>): Observable<PontoColeta> {
-        return this.http.put<PontoColeta>(`${this.apiUrl}/${id}`, pontoData);
+    // Criar novo ponto
+    create(ponto: PontoColeta): Observable<PontoColeta> {
+        return this.http.post<PontoColeta>(this.baseUrl, ponto);
     }
 
-    delete(id: string): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/${id}`);
+    // Atualizar ponto existente
+    update(id: string, ponto: PontoColeta): Observable<PontoColeta> {
+        return this.http.put<PontoColeta>(`${this.baseUrl}/${id}`, ponto);
+    }
+
+    // Deletar ponto (caso precise remover algum)
+    delete(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
 }

@@ -1,116 +1,85 @@
-.modal {
-  display: none;
+.modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
-.modal-aberto {
-  display: flex;
+.modal-content {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 15px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  font-family: 'Poppins', sans-serif;
 }
 
-.modal-conteudo {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-h2 {
-  margin-top: 0;
-  color: #2c3e50;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+.modal-content h3 {
+  margin-bottom: 20px;
+  color: #2E7D32;
 }
 
 .form-group {
   margin-bottom: 15px;
 }
 
-label {
+.form-group label {
   display: block;
-  margin-bottom: 5px;
   font-weight: 500;
+  margin-bottom: 5px;
 }
 
-input[type="text"], 
-input[type="number"] {
+.form-group input[type="text"] {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-.erro-validacao {
-  color: #e74c3c;
-  font-size: 0.85em;
-  margin-top: 5px;
-}
-
-.lista-materiais {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-.material-item {
+.checkbox-group {
   display: flex;
-  align-items: center;
-}
-
-.material-item label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.material-item input {
-  margin-right: 8px;
-}
-
-.coordenadas {
-  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.coordenadas > div {
-  flex: 1;
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
 }
 
-.acoes {
+.modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
 }
 
-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.btn-cancelar {
-  background-color: #e0e0e0;
-  color: #333;
-}
-
-.btn-salvar {
-  background-color: #27ae60;
+.btn-primary {
+  background-color: #2E7D32;
   color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.btn-salvar:disabled {
-  background-color: #95a5a6;
+.btn-primary:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
 }

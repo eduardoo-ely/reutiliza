@@ -50,4 +50,5 @@ export class UserService {
   isLoggedIn(): boolean {
     return this.getLoggedInUser() !== null;
   }
+
 }
