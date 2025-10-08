@@ -19,7 +19,7 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class UserService {
-  private readonly apiUrl = 'http://localhost:3000/api/users';
+  private readonly apiUrl = 'http://100.111.131.103:3000/api/users';
   private readonly LOGGED_IN_USER_KEY = 'app-logged-in-user';
 
   constructor(private http: HttpClient) { }

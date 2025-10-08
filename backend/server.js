@@ -13,9 +13,8 @@ const dbRoutes = require('./src/routes/db.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(3000, '0.0.0.0', () => console.log('Servidor rodando'));
     console.log(`Servidor rodando na porta ${PORT}`);
-});
 
 
 // Middlewares globais
@@ -59,5 +58,5 @@ app.use((err, req, res, next) => {
 
 // --- Iniciar o Servidor ---
 app.listen(PORT, () => {
-    console.log(`>>> SERVIDOR RODANDO em http://localhost:${PORT}`);
+    console.log(`>>> SERVIDOR RODANDO em  http://192.168.1.3:${PORT}`);
 });
