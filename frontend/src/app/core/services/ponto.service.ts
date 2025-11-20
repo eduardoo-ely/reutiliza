@@ -5,7 +5,7 @@ import { PontoColeta } from '../../models/ponto-coleta.model';
 
 @Injectable({ providedIn: 'root' })
 export class PontoService {
-    private baseUrl = ' http://100.111.131.103:3000/api/pontos';
+    private baseUrl = 'http://localhost:3000/api/pontos';
 
     constructor(private http: HttpClient) {}
 

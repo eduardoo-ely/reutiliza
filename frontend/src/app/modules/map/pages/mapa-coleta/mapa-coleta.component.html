@@ -15,20 +15,34 @@
         <!-- Botões de materiais -->
         <button *ngFor="let material of materiaisDisponiveis"
                 class="material-btn"
-                title="{{material}}"
+                [title]="material"
                 (click)="tracarRotaParaMaterial(material)">
-            <img>
+            ♻️
         </button>
 
         <!-- Limpar rota -->
-        <button class="material-btn clear-btn" title="Limpar Rota" (click)="limparRota()">✖</button>
+        <button class="material-btn clear-btn"
+                title="Limpar Rota"
+                (click)="limparRota()">
+            ✖
+        </button>
 
         <!-- Recenter / Bússola -->
-        <button class="material-btn recenter-btn" (click)="recenterMap()">
+        <button class="material-btn recenter-btn"
+                title="Centralizar no meu local"
+                (click)="recenterMap()">
             <img src="assets/bussola.png" alt="Recenter">
         </button>
     </div>
 
-    <!-- Modal de cadastro de ponto -->
+    <!-- Modal de cadastro de ponto (admin) -->
     <app-cadastrar-ponto></app-cadastrar-ponto>
+
+    <!-- Modal de registro de material (usuário) -->
+    <app-registrar-material
+            [pontoColeta]="pontoSelecionado"
+            [isVisible]="mostrarModalRegistro"
+            (close)="fecharModalRegistro()"
+            (materialRegistrado)="onMaterialRegistrado($event)">
+    </app-registrar-material>
 </div>

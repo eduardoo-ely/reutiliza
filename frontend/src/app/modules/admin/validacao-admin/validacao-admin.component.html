@@ -1,78 +1,92 @@
 <div class="admin-container">
-  <h2>Validação de Materiais Reciclados</h2>
-  
-  <div class="alert" [ngClass]="{'alert-success': tipoMensagem === 'sucesso', 'alert-danger': tipoMensagem === 'erro', 'alert-info': tipoMensagem === 'info'}" *ngIf="mensagem">
-    {{ mensagem }}
-  </div>
-  
-  <div class="filtros">
-    <button class="btn" [ngClass]="{'btn-active': filtroStatus === 'pendente'}" (click)="mudarFiltro('pendente')">Pendentes</button>
-    <button class="btn" [ngClass]="{'btn-active': filtroStatus === 'validado'}" (click)="mudarFiltro('validado')">Validados</button>
-    <button class="btn" [ngClass]="{'btn-active': filtroStatus === 'rejeitado'}" (click)="mudarFiltro('rejeitado')">Rejeitados</button>
-  </div>
-  
-  <div class="loading-spinner" *ngIf="carregando">
-    <div class="spinner"></div>
-    <p>Carregando materiais...</p>
-  </div>
-  
-  <div class="empty-state" *ngIf="!carregando && materiaisPendentes.length === 0">
-    <div class="empty-icon">✓</div>
-    <h3>Nenhum material {{ filtroStatus }}</h3>
-    <p>Não há materiais com status "{{ filtroStatus }}" no momento.</p>
-  </div>
-  
-  <div class="materiais-list" *ngIf="!carregando && materiaisPendentes.length > 0">
-    <div class="material-card" *ngFor="let material of materiaisPendentes">
-      <div class="material-header">
-        <h3>Material #{{ material._id?.substring(0, 8) }}</h3>
-        <span class="badge" [ngClass]="{
+    <h2>🛡️ Validação de Materiais Reciclados (Admin)</h2>
+
+    <div class="alert" [ngClass]="{'alert-success': tipoMensagem === 'sucesso', 'alert-danger': tipoMensagem === 'erro', 'alert-info': tipoMensagem === 'info'}" *ngIf="mensagem">
+        {{ mensagem }}
+    </div>
+
+    <div class="filtros">
+        <button class="btn" [ngClass]="{'btn-active': filtroStatus === 'pendente'}" (click)="mudarFiltro('pendente')">
+            ⏳ Pendentes
+        </button>
+        <button class="btn" [ngClass]="{'btn-active': filtroStatus === 'validado'}" (click)="mudarFiltro('validado')">
+            ✅ Validados
+        </button>
+        <button class="btn" [ngClass]="{'btn-active': filtroStatus === 'rejeitado'}" (click)="mudarFiltro('rejeitado')">
+            ❌ Rejeitados
+        </button>
+    </div>
+
+    <div class="loading-spinner" *ngIf="carregando">
+        <div class="spinner"></div>
+        <p>Carregando materiais...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!carregando && materiaisPendentes.length === 0">
+        <div class="empty-icon">✓</div>
+        <h3>Nenhum material {{ filtroStatus }}</h3>
+        <p>Não há materiais com status "{{ filtroStatus }}" no momento.</p>
+    </div>
+
+    <div class="materiais-list" *ngIf="!carregando && materiaisPendentes.length > 0">
+        <div class="material-card" *ngFor="let material of materiaisPendentes">
+            <div class="material-header">
+                <h3>Material #{{ material._id?.substring(0, 8) }}</h3>
+                <span class="badge" [ngClass]="{
           'badge-warning': material.status === 'pendente',
           'badge-success': material.status === 'validado',
           'badge-danger': material.status === 'rejeitado'
         }">{{ material.status }}</span>
-      </div>
-      
-      <div class="material-body">
-        <div class="material-info">
-          <div class="info-row">
-            <span class="info-label">Material:</span>
-            <span class="info-value">{{ material.material }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Quantidade:</span>
-            <span class="info-value">{{ material.quantidade }} {{ material.unidade }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Data de Entrega:</span>
-            <span class="info-value">{{ formatarData(material.dataEntrega) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Ponto de Coleta:</span>
-            <span class="info-value">{{ material.pontoColetaId }}</span>
-          </div>
-          <div class="info-row" *ngIf="material.observacoes">
-            <span class="info-label">Observações:</span>
-            <span class="info-value">{{ material.observacoes }}</span>
-          </div>
+            </div>
+
+            <div class="material-body">
+                <div class="material-info">
+                    <div class="info-row">
+                        <span class="info-label">♻️ Material:</span>
+                        <span class="info-value">{{ getMaterialTipo(material) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">⚖️ Quantidade:</span>
+                        <span class="info-value">{{ material.quantidade }} {{ material.unidade }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">🏆 Pontos:</span>
+                        <span class="info-value">{{ material.pontos || 0 }} pontos</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📅 Data de Registro:</span>
+                        <span class="info-value">{{ formatarData(material.dataRegistro) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">👤 Usuário:</span>
+                        <span class="info-value">{{ getUsuarioNome(material) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📍 Ponto de Coleta:</span>
+                        <span class="info-value">{{ getPontoNome(material) }}</span>
+                    </div>
+                    <div class="info-row" *ngIf="material.observacoes">
+                        <span class="info-label">📝 Observações:</span>
+                        <span class="info-value">{{ material.observacoes }}</span>
+                    </div>
+                </div>
+
+                <div class="validacao-form" *ngIf="material.status === 'pendente'">
+                    <div class="form-group">
+                        <label for="observacoes-{{material._id}}">Observações da validação (opcional):</label>
+                        <textarea id="observacoes-{{material._id}}" class="form-control" rows="2" #observacoes placeholder="Adicione observações sobre esta validação..."></textarea>
+                    </div>
+
+                    <div class="validacao-actions">
+                        <button class="btn btn-danger" (click)="validarMaterial(material, false, observacoes.value)">
+                            ❌ Rejeitar
+                        </button>
+                        <button class="btn btn-success" (click)="validarMaterial(material, true, observacoes.value)">
+                            ✅ Validar e Atribuir {{ material.pontos }} Pontos
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="validacao-form" *ngIf="material.status === 'pendente'">
-          <div class="form-group">
-            <label for="observacoes-{{material._id}}">Observações (opcional):</label>
-            <textarea id="observacoes-{{material._id}}" class="form-control" rows="2" #observacoes></textarea>
-          </div>
-          
-          <div class="validacao-actions">
-            <button class="btn btn-danger" (click)="validarMaterial(material, false, observacoes.value)">
-              Rejeitar
-            </button>
-            <button class="btn btn-success" (click)="validarMaterial(material, true, observacoes.value)">
-              Validar e Atribuir Pontos
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </div>

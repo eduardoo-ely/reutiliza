@@ -1,64 +1,72 @@
 <div class="validacao-container">
-  <h2>Validação de Materiais Recebidos</h2>
-  
-  <div class="alert" [ngClass]="{'alert-success': tipoMensagem === 'sucesso', 'alert-danger': tipoMensagem === 'erro', 'alert-info': tipoMensagem === 'info'}" *ngIf="mensagem">
-    {{ mensagem }}
-  </div>
-  
-  <div class="loading-spinner" *ngIf="carregando">
-    <div class="spinner"></div>
-    <p>Carregando validações pendentes...</p>
-  </div>
-  
-  <div class="empty-state" *ngIf="!carregando && validacoesPendentes.length === 0">
-    <div class="empty-icon">✓</div>
-    <h3>Nenhuma validação pendente</h3>
-    <p>Você não possui materiais pendentes para validação no momento.</p>
-  </div>
-  
-  <div class="validacoes-list" *ngIf="!carregando && validacoesPendentes.length > 0">
-    <div class="validacao-card" *ngFor="let validacao of validacoesPendentes">
-      <div class="validacao-header">
-        <h3>Validação #{{ validacao._id?.substring(0, 8) }}</h3>
-        <span class="badge badge-warning">Pendente</span>
-      </div>
-      
-      <div class="validacao-body" *ngIf="getMaterialInfo(validacao.materialRecicladoId) as material">
-        <div class="material-info">
-          <div class="info-row">
-            <span class="info-label">Material:</span>
-            <span class="info-value">{{ material.material }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Quantidade:</span>
-            <span class="info-value">{{ material.quantidade }} {{ material.unidade }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Data de Entrega:</span>
-            <span class="info-value">{{ formatarData(material.dataEntrega) }}</span>
-          </div>
-          <div class="info-row" *ngIf="material.observacoes">
-            <span class="info-label">Observações:</span>
-            <span class="info-value">{{ material.observacoes }}</span>
-          </div>
-        </div>
-        
-        <div class="validacao-form">
-          <div class="form-group">
-            <label for="observacoes-{{validacao._id}}">Observações (opcional):</label>
-            <textarea id="observacoes-{{validacao._id}}" class="form-control" rows="2" #observacoes></textarea>
-          </div>
-          
-          <div class="validacao-actions">
-            <button class="btn btn-danger" (click)="confirmarValidacao(validacao, false, observacoes.value)">
-              Rejeitar
-            </button>
-            <button class="btn btn-success" (click)="confirmarValidacao(validacao, true, observacoes.value)">
-              Confirmar Recebimento
-            </button>
-          </div>
-        </div>
-      </div>
+    <h2>✅ Validação de Materiais Recebidos</h2>
+
+    <div class="alert" [ngClass]="{'alert-success': tipoMensagem === 'sucesso', 'alert-danger': tipoMensagem === 'erro', 'alert-info': tipoMensagem === 'info'}" *ngIf="mensagem">
+        {{ mensagem }}
     </div>
-  </div>
+
+    <div class="loading-spinner" *ngIf="carregando">
+        <div class="spinner"></div>
+        <p>Carregando validações pendentes...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!carregando && validacoesPendentes.length === 0">
+        <div class="empty-icon">✓</div>
+        <h3>Nenhuma validação pendente</h3>
+        <p>Você não possui materiais pendentes para validação no momento.</p>
+    </div>
+
+    <div class="validacoes-list" *ngIf="!carregando && validacoesPendentes.length > 0">
+        <div class="validacao-card" *ngFor="let validacao of validacoesPendentes">
+            <div class="validacao-header">
+                <h3>Validação #{{ validacao._id?.substring(0, 8) }}</h3>
+                <span class="badge badge-warning">Pendente</span>
+            </div>
+
+            <div class="validacao-body">
+                <div class="material-info">
+                    <div class="info-row">
+                        <span class="info-label">♻️ Material:</span>
+                        <span class="info-value">{{ getMaterialTipo(validacao) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">⚖️ Quantidade:</span>
+                        <span class="info-value">{{ getMaterialQuantidade(validacao) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">👤 Entregue por:</span>
+                        <span class="info-value">{{ getUsuarioNome(validacao) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📍 Ponto de Coleta:</span>
+                        <span class="info-value">{{ getPontoNome(validacao) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📅 Data de Entrega:</span>
+                        <span class="info-value">{{ formatarData(getMaterialDataRegistro(validacao)) }}</span>
+                    </div>
+                    <div class="info-row" *ngIf="getMaterialObservacoes(validacao)">
+                        <span class="info-label">📝 Observações:</span>
+                        <span class="info-value">{{ getMaterialObservacoes(validacao) }}</span>
+                    </div>
+                </div>
+
+                <div class="validacao-form">
+                    <div class="form-group">
+                        <label for="observacoes-{{validacao._id}}">Observações (opcional):</label>
+                        <textarea id="observacoes-{{validacao._id}}" class="form-control" rows="2" #observacoes placeholder="Adicione observações sobre esta validação..."></textarea>
+                    </div>
+
+                    <div class="validacao-actions">
+                        <button class="btn btn-danger" (click)="confirmarValidacao(validacao, false, observacoes.value)">
+                            ❌ Rejeitar
+                        </button>
+                        <button class="btn btn-success" (click)="confirmarValidacao(validacao, true, observacoes.value)">
+                            ✅ Confirmar Recebimento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
