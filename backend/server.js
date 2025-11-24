@@ -12,6 +12,9 @@ const validacaoRoutes = require('./src/routes/validacao.routes');
 const pontosRoutes = require('./src/routes/pontos.routes');
 const recompensaRoutes = require('./src/routes/recompensa.routes');
 const dbRoutes = require('./src/routes/db.routes');
+const notificacaoRoutes = require('./src/routes/notificacao.routes');
+const estoqueRoutes = require('./src/routes/estoque.routes');
+const dashboardRoutes = require('./src/routes/dashboard.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,7 +59,7 @@ app.get('/', (req, res) => {
     res.status(200).json({
         status: 'ok',
         message: 'Servidor Reutiliza Backend está no ar! 🚀',
-        version: '1.0.0',
+        version: '2.0.0 - Sprint 3',
         timestamp: new Date().toISOString(),
         endpoints: {
             users: '/api/users',
@@ -65,8 +68,19 @@ app.get('/', (req, res) => {
             validacoes: '/api/validacoes',
             pontuacao: '/api/pontuacao',
             recompensas: '/api/recompensas',
+            notificacoes: '/api/notificacoes',
+            estoque: '/api/estoque',
+            dashboard: '/api/dashboard',
             database: '/api/db'
-        }
+        },
+        novidades_sprint3: [
+            '🔔 Sistema de Notificações',
+            '📦 Controle de Estoque por Ponto de Coleta',
+            '📊 Movimentações de Estoque',
+            '💰 Histórico Completo de Transações de Pontos',
+            '✅ Validação Cruzada Aprimorada',
+            '🎁 Sistema de Recompensas Expandido'
+        ]
     });
 });
 
@@ -77,6 +91,8 @@ app.use('/api/materiais', materialRoutes);
 app.use('/api/validacoes', validacaoRoutes);
 app.use('/api/pontuacao', pontosRoutes);
 app.use('/api/recompensas', recompensaRoutes);
+app.use('/api/notificacoes', notificacaoRoutes);
+app.use('/api/estoque', estoqueRoutes);
 app.use('/api/db', dbRoutes);
 
 // Rota 404
@@ -106,11 +122,17 @@ app.use((err, req, res, next) => {
 
 // --- Iniciar o Servidor ---
 app.listen(PORT, HOST, () => {
-    console.log('\n' + '='.repeat(50));
-    console.log(`🚀 Servidor Reutiliza rodando!`);
+    console.log('\n' + '='.repeat(60));
+    console.log(`🚀 Servidor Reutiliza rodando - Sprint 3!`);
     console.log(`📍 URL: http://${HOST}:${PORT}`);
     console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    console.log('='.repeat(50) + '\n');
+    console.log(`📦 Versão: 2.0.0`);
+    console.log('='.repeat(60));
+    console.log('\n🆕 Novos endpoints disponíveis:');
+    console.log('   🔔 /api/notificacoes - Sistema de notificações');
+    console.log('   📦 /api/estoque - Controle de estoque');
+    console.log('   📊 /api/estoque/movimentacoes - Movimentações');
+    console.log('='.repeat(60) + '\n');
 });
 
 // Tratamento de erros não capturados
