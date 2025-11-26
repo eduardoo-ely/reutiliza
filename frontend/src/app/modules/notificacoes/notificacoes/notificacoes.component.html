@@ -1,0 +1,101 @@
+<div class="notificacoes-container">
+    <div class="notificacoes-header">
+        <div class="header-left">
+            <h2>🔔 Notificações</h2>
+            <span class="badge-nao-lidas" *ngIf="totalNaoLidas > 0">
+        {{ totalNaoLidas }} não lida{{ totalNaoLidas > 1 ? 's' : '' }}
+      </span>
+        </div>
+        <div class="header-actions">
+            <button
+                    class="btn-marcar-todas"
+                    (click)="marcarTodasComoLidas()"
+                    *ngIf="totalNaoLidas > 0">
+                ✓ Marcar todas como lidas
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros">
+        <button
+                [class.active]="filtroAtivo === 'todas'"
+                (click)="mudarFiltro('todas')">
+            Todas ({{ notificacoes.length }})
+        </button>
+        <button
+                [class.active]="filtroAtivo === 'naoLidas'"
+                (click)="mudarFiltro('naoLidas')">
+            Não lidas ({{ totalNaoLidas }})
+        </button>
+    </div>
+
+    <!-- Mensagem de Feedback -->
+    <div
+            class="alert"
+            [ngClass]="{
+      'alert-success': tipoMensagem === 'success',
+      'alert-error': tipoMensagem === 'error',
+      'alert-info': tipoMensagem === 'info'
+    }"
+            *ngIf="mensagem">
+        {{ mensagem }}
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-spinner" *ngIf="carregando">
+        <div class="spinner"></div>
+        <p>Carregando notificações...</p>
+    </div>
+
+    <!-- Lista de Notificações -->
+    <div class="notificacoes-lista" *ngIf="!carregando">
+        <div
+                class="notificacao-item"
+                *ngFor="let notif of notificacoes"
+                [class.nao-lida]="!notif.lida"
+                [class]="getClassePrioridade(notif.prioridade)">
+
+            <div class="notif-icon">
+                {{ getIconeTipo(notif.tipo) }}
+            </div>
+
+            <div class="notif-content">
+                <div class="notif-header">
+                    <h4>{{ notif.titulo }}</h4>
+                    <span class="notif-data">{{ formatarData(notif.createdAt) }}</span>
+                </div>
+                <p class="notif-mensagem">{{ notif.mensagem }}</p>
+
+                <div class="notif-footer">
+          <span class="notif-prioridade">
+            {{ notif.prioridade }}
+          </span>
+                    <div class="notif-actions">
+                        <button
+                                class="btn-acao marcar"
+                                *ngIf="!notif.lida"
+                                (click)="marcarComoLida(notif._id)"
+                                title="Marcar como lida">
+                            ✓
+                        </button>
+                        <button
+                                class="btn-acao excluir"
+                                (click)="deletarNotificacao(notif._id)"
+                                title="Excluir">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div class="empty-state" *ngIf="notificacoes.length === 0">
+            <div class="empty-icon">📭</div>
+            <h3>Nenhuma notificação</h3>
+            <p *ngIf="filtroAtivo === 'todas'">Você não possui notificações no momento.</p>
+            <p *ngIf="filtroAtivo === 'naoLidas'">Todas as notificações foram lidas!</p>
+        </div>
+    </div>
+</div>

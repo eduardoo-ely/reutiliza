@@ -26,14 +26,20 @@ export class MapaColetaComponent implements AfterViewInit {
   private routingControl: any = null;
 
   materiaisDisponiveis = [
-    'Eletroeletrônicos',
-    'Móveis',
-    'Vidros',
-    'Óleo de Cozinha',
-    'Pneus',
-    'Metais e Ferros',
-    'Papel e Papelão'
+    { nome: 'Papel', icone: '📄' },
+    { nome: 'Plástico', icone: '🥤' },
+    { nome: 'Vidro', icone: '🍾' },
+    { nome: 'Metal', icone: '🔩' },
+    { nome: 'Eletrônico', icone: '📱' },
+    { nome: 'Óleo', icone: '🛢️' },
+    { nome: 'Outros', icone: '♻️' }
   ];
+
+  menuAberto = false;
+
+  toggleMenu() {
+    this.menuAberto = !this.menuAberto;
+  }
 
   pontoIcon = L.icon({
     iconUrl: 'assets/fabrica.png',

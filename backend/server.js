@@ -94,6 +94,7 @@ app.use('/api/recompensas', recompensaRoutes);
 app.use('/api/notificacoes', notificacaoRoutes);
 app.use('/api/estoque', estoqueRoutes);
 app.use('/api/db', dbRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Rota 404
 app.use((req, res) => {

@@ -1,0 +1,153 @@
+<div class="estoque-container">
+    <div class="estoque-header">
+        <h2>📦 Controle de Estoque</h2>
+        <button class="btn-reload" (click)="recarregar()" *ngIf="!carregando">
+            🔄 Atualizar
+        </button>
+    </div>
+
+    <!-- Alertas Críticos -->
+    <div class="alertas-section" *ngIf="estoquesAlertas.length > 0">
+        <h3>🚨 Alertas de Estoque</h3>
+        <div class="alertas-grid">
+            <div
+                    class="alerta-card"
+                    *ngFor="let alerta of estoquesAlertas.slice(0, 3)"
+                    [class]="getClasseStatus(alerta.status)">
+                <div class="alerta-icon">{{ getIconeStatus(alerta.status) }}</div>
+                <div class="alerta-info">
+                    <div class="alerta-titulo">{{ alerta.pontoColeta.nome }}</div>
+                    <div class="alerta-material">
+                        {{ getIconeMaterial(alerta.tipoMaterial) }} {{ alerta.tipoMaterial }}
+                    </div>
+                    <div class="alerta-nivel">
+                        {{ alerta.quantidadeAtual }}/{{ alerta.capacidadeMaxima }}{{ alerta.unidade }}
+                        ({{ getPercentualOcupacao(alerta).toFixed(0) }}%)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-section">
+        <div class="filtro-group">
+            <label>Status:</label>
+            <div class="filtro-buttons">
+                <button
+                        [class.active]="filtroStatus === 'todos'"
+                        (click)="mudarFiltroStatus('todos')">
+                    Todos
+                </button>
+                <button
+                        [class.active]="filtroStatus === 'normal'"
+                        (click)="mudarFiltroStatus('normal')">
+                    ✅ Normal
+                </button>
+                <button
+                        [class.active]="filtroStatus === 'alerta'"
+                        (click)="mudarFiltroStatus('alerta')">
+                    ⚠️ Alerta
+                </button>
+                <button
+                        [class.active]="filtroStatus === 'cheio'"
+                        (click)="mudarFiltroStatus('cheio')">
+                    🚨 Cheio
+                </button>
+            </div>
+        </div>
+
+        <div class="filtro-group">
+            <label>Material:</label>
+            <select [(ngModel)]="filtroMaterial" (change)="carregarEstoques()">
+                <option value="todos">Todos os materiais</option>
+                <option *ngFor="let material of materiaisDisponiveis" [value]="material">
+                    {{ getIconeMaterial(material) }} {{ material }}
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Mensagem -->
+    <div
+            class="alert"
+            [ngClass]="{
+      'alert-success': tipoMensagem === 'success',
+      'alert-error': tipoMensagem === 'error',
+      'alert-info': tipoMensagem === 'info'
+    }"
+            *ngIf="mensagem">
+        {{ mensagem }}
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-spinner" *ngIf="carregando">
+        <div class="spinner"></div>
+        <p>Carregando estoques...</p>
+    </div>
+
+    <!-- Lista de Estoques -->
+    <div class="estoques-grid" *ngIf="!carregando">
+        <div
+                class="estoque-card"
+                *ngFor="let estoque of estoques"
+                [class]="getClasseStatus(estoque.status)">
+
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="material-icon">{{ getIconeMaterial(estoque.tipoMaterial) }}</div>
+                    <div class="header-info">
+                        <h4>{{ estoque.tipoMaterial }}</h4>
+                        <p>{{ estoque.pontoColeta.nome }}</p>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    {{ getIconeStatus(estoque.status) }} {{ estoque.status }}
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="quantidade-info">
+                    <div class="quantidade-atual">
+                        <span class="label">Atual:</span>
+                        <span class="valor">{{ estoque.quantidadeAtual }}{{ estoque.unidade }}</span>
+                    </div>
+                    <div class="quantidade-capacidade">
+                        <span class="label">Capacidade:</span>
+                        <span class="valor">{{ estoque.capacidadeMaxima }}{{ estoque.unidade }}</span>
+                    </div>
+                </div>
+
+                <div class="progresso-container">
+                    <div class="progresso-barra">
+                        <div
+                                class="progresso-fill"
+                                [style.width.%]="getPercentualOcupacao(estoque)">
+                        </div>
+                    </div>
+                    <div class="progresso-percentual">
+                        {{ getPercentualOcupacao(estoque).toFixed(1) }}%
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="footer-item" *ngIf="estoque.ultimaEntrada">
+                        <span class="footer-label">📥 Última entrada:</span>
+                        <span class="footer-valor">{{ formatarData(estoque.ultimaEntrada) }}</span>
+                    </div>
+                    <div class="footer-item" *ngIf="estoque.ultimaSaida">
+                        <span class="footer-label">📤 Última saída:</span>
+                        <span class="footer-valor">{{ formatarData(estoque.ultimaSaida) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="estoques.length === 0">
+            <div class="empty-icon">📦</div>
+            <h3>Nenhum estoque encontrado</h3>
+            <p>Não há estoques com os filtros selecionados.</p>
+        </div>
+    </div>
+</div>

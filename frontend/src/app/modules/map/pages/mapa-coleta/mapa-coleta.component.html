@@ -1,8 +1,7 @@
 <div class="map-wrapper">
-    <!-- Mapa -->
     <div id="map"></div>
 
-    <!-- Top Panel / Busca (sobreposto) -->
+    <!-- Top Panel -->
     <div class="top-panel">
         <div class="search-box" (click)="onClickReutiliza()">
             <span class="search-icon">🔍</span>
@@ -10,35 +9,41 @@
         </div>
     </div>
 
-    <!-- Menu lateral inferior: materiais + limpar + recenter -->
+    <!-- MENU LATERAL -->
     <div class="material-menu">
-        <!-- Botões de materiais -->
-        <button *ngFor="let material of materiaisDisponiveis"
-                class="material-btn"
-                [title]="material"
-                (click)="tracarRotaParaMaterial(material)">
+
+        <!-- BOTÃO PRINCIPAL (abre/fecha) -->
+        <button class="material-main-btn" (click)="menuAberto = !menuAberto">
             ♻️
         </button>
 
-        <!-- Limpar rota -->
+        <!-- SUBMENU DE MATERIAIS -->
+        <div class="material-submenu" *ngIf="menuAberto">
+            <button *ngFor="let material of materiaisDisponiveis"
+                    class="material-btn"
+                    [title]="material.nome"
+                    (click)="tracarRotaParaMaterial(material.nome)">
+                {{ material.icone }}
+            </button>
+        </div>
+
+        <!-- BOTÃO LIMPAR -->
         <button class="material-btn clear-btn"
-                title="Limpar Rota"
+                title="Limpar rota"
                 (click)="limparRota()">
             ✖
         </button>
 
-        <!-- Recenter / Bússola -->
+        <!-- BOTÃO BUSSOLA -->
         <button class="material-btn recenter-btn"
-                title="Centralizar no meu local"
+                title="Centralizar"
                 (click)="recenterMap()">
             <img src="assets/bussola.png" alt="Recenter">
         </button>
     </div>
 
-    <!-- Modal de cadastro de ponto (admin) -->
+    <!-- Modais -->
     <app-cadastrar-ponto></app-cadastrar-ponto>
-
-    <!-- Modal de registro de material (usuário) -->
     <app-registrar-material
             [pontoColeta]="pontoSelecionado"
             [isVisible]="mostrarModalRegistro"
