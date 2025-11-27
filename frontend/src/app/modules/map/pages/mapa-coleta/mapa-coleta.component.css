@@ -2,7 +2,7 @@
 .map-wrapper {
   position: relative;
   width: 100%;
-  height: 100vh; /* fullscreen */
+  height: 100vh;
 }
 
 /* Mapa Leaflet */
@@ -23,126 +23,405 @@
 .search-box {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background-color: #2E7D32;
+  gap: 12px;
+  background: linear-gradient(135deg, #2E7D32, #388E3C);
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
   border-radius: 30px;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.search-box:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-}
-.search-icon {
-  font-size: 20px;
-}
-.search-text {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
-/* Container lateral */
+.search-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.5);
+}
+
+.search-icon {
+  font-size: 22px;
+}
+
+.search-text {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Container lateral - REDESENHADO */
 .material-menu {
   position: absolute;
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
   z-index: 1500;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
 }
 
-/* Botão principal (abre/fecha o submenu) */
+/* Botão principal (toggle menu) - MELHORADO */
 .material-main-btn {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
-  background-color: #4CAF50;
+  border: none;
+  background: linear-gradient(135deg, #2E7D32, #1B5E20);
   color: white;
-  font-size: 26px;
+  font-size: 32px;
   cursor: pointer;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  transition: transform 0.2s, background-color 0.2s;
+  box-shadow: 0 4px 16px rgba(46, 125, 50, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-/* Submenu de materiais (vertical) */
+.material-main-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.material-main-btn:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.6);
+}
+
+.material-main-btn:hover::before {
+  opacity: 1;
+}
+
+.material-main-btn:active {
+  transform: scale(0.95);
+}
+
+/* Submenu de materiais - REDESENHADO */
 .material-submenu {
   display: flex;
   flex-direction: column;
   gap: 10px;
-
-  animation: fadeIn 0.2s ease-in-out;
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease-out;
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2E7D32 #f0f0f0;
 }
 
-/* Botões dos materiais */
-.material-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  background-color: #4CAF50;
+.material-submenu::-webkit-scrollbar {
+  width: 6px;
+}
 
+.material-submenu::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+.material-submenu::-webkit-scrollbar-thumb {
+  background: #2E7D32;
+  border-radius: 3px;
+}
+
+.material-submenu::-webkit-scrollbar-thumb:hover {
+  background: #1B5E20;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Botões dos materiais - MELHORADOS */
+.material-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: linear-gradient(135deg, #ffffff, #f5f5f5);
   display: flex;
   justify-content: center;
   align-items: center;
-
-  font-size: 24px;
+  font-size: 28px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
 
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+.material-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(46, 125, 50, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 .material-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
+  border-color: #2E7D32;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
-/* Animação suave */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+.material-btn:hover::before {
+  width: 100%;
+  height: 100%;
 }
 
+.material-btn:active {
+  transform: scale(1.05);
+}
 
-/* Tooltip simples */
+/* Tooltip para os botões de material */
+.material-btn[title] {
+  position: relative;
+}
+
 .material-btn[title]:hover::after {
   content: attr(title);
   position: absolute;
-  right: 60px;
+  right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  background: #333;
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 4px;
+  margin-right: 12px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
   white-space: nowrap;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  z-index: 10000;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Botão Limpar Rota */
+.material-btn[title]:hover::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 6px;
+  border: 6px solid transparent;
+  border-left-color: rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* Botão Limpar - MELHORADO */
 .clear-btn {
-  background-color: #f44336;
+  background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+  border-color: #f44336 !important;
+  color: white;
 }
 
-/* Botão Recenter */
-.recenter-btn {
-  background-color: #2E7D32;
+.clear-btn:hover {
+  background: linear-gradient(135deg, #e53935, #c62828) !important;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
 }
+
+/* Botão Recenter - MELHORADO */
+.recenter-btn {
+  background: linear-gradient(135deg, #2196F3, #1976D2) !important;
+  border-color: #2196F3 !important;
+  padding: 0;
+}
+
 .recenter-btn img {
   width: 32px;
   height: 32px;
+  filter: brightness(0) invert(1);
+}
+
+.recenter-btn:hover {
+  background: linear-gradient(135deg, #1E88E5, #1565C0) !important;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4) !important;
+}
+
+/* Badge de contador de materiais */
+.material-count-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #f44336;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Animação de pulsação para o botão principal */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 16px rgba(46, 125, 50, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(46, 125, 50, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 16px rgba(46, 125, 50, 0.4);
+  }
+}
+
+.material-main-btn.has-route {
+  animation: pulse 2s infinite;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .material-menu {
+    right: 15px;
+  }
+
+  .material-main-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+
+  .material-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .search-box {
+    padding: 10px 20px;
+  }
+
+  .search-text {
+    font-size: 18px;
+  }
+
+  .material-submenu {
+    max-height: 300px;
+  }
+
+  /* Tooltip menor no mobile */
+  .material-btn[title]:hover::after {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-panel {
+    top: 15px;
+  }
+
+  .search-box {
+    padding: 8px 16px;
+  }
+
+  .search-text {
+    font-size: 16px;
+  }
+
+  .search-icon {
+    font-size: 18px;
+  }
+
+  .material-menu {
+    right: 10px;
+  }
+
+  .material-main-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 26px;
+  }
+
+  .material-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  .material-submenu {
+    padding: 10px;
+    gap: 8px;
+    max-height: 250px;
+  }
+}
+
+/* Estados especiais */
+.material-btn.selected {
+  background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+  color: white;
+  border-color: #2E7D32 !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.5) !important;
+}
+
+.material-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Animação de loading no menu */
+.material-menu.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Efeito glassmorphism para elementos modernos */
+.search-box,
+.material-submenu {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Sombras mais suaves e profissionais */
+.material-main-btn,
+.material-btn,
+.search-box {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Transições suaves globais */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

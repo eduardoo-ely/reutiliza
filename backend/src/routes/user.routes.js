@@ -8,7 +8,6 @@ router.post("/register", async (req, res) => {
     try {
         const { email, senha, nome } = req.body;
 
-        // Validação básica
         if (!email || !senha || !nome) {
             return res.status(400).json({
                 success: false,
@@ -16,7 +15,6 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        // Verificar se o e-mail já existe
         const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(400).json({
@@ -25,22 +23,33 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        // Hash da senha
         const salt = await bcrypt.genSalt(10);
         const senhaComHash = await bcrypt.hash(senha, salt);
 
-        // Criar usuário
-        const newUser = new User({ nome, email, senha: senhaComHash });
+        const newUser = new User({
+            nome,
+            email,
+            senha: senhaComHash,
+            role: 'usuario' // Define explicitamente como usuario
+        });
         await newUser.save();
 
         res.status(201).json({
             success: true,
             message: "Conta criada com sucesso!",
-            user: { id: newUser._id, nome: newUser.nome, email: newUser.email },
+            user: {
+                id: newUser._id,
+                nome: newUser.nome,
+                email: newUser.email,
+                role: newUser.role
+            },
         });
     } catch (error) {
         console.error("Erro no registro:", error);
-        res.status(500).json({ success: false, message: "Erro ao registrar usuário." });
+        res.status(500).json({
+            success: false,
+            message: "Erro ao registrar usuário."
+        });
     }
 });
 
@@ -49,7 +58,6 @@ router.post("/login", async (req, res) => {
     try {
         const { email, senha } = req.body;
 
-        // Validação básica
         if (!email || !senha) {
             return res.status(400).json({
                 success: false,
@@ -57,29 +65,30 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        // Procurar usuário
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "Usuário ou senha incorretos.", // mais genérico
+                message: "Usuário ou senha incorretos.",
             });
         }
 
-        // Validar senha
         const senhaValida = await bcrypt.compare(senha, user.senha);
         if (!senhaValida) {
             return res.status(401).json({
                 success: false,
-                message: "Usuário ou senha incorretos.", // mais genérico
+                message: "Usuário ou senha incorretos.",
             });
         }
 
-        // Retorno seguro (não envia senha)
+        // Retorna dados completos do usuário
         const userToReturn = {
             id: user._id,
             email: user.email,
             nome: user.nome,
+            pontos: user.pontos || 0,
+            pontosUtilizados: user.pontosUtilizados || 0,
+            role: user.role
         };
 
         res.json({
@@ -89,7 +98,10 @@ router.post("/login", async (req, res) => {
         });
     } catch (error) {
         console.error("Erro no login:", error);
-        res.status(500).json({ success: false, message: "Erro no servidor." });
+        res.status(500).json({
+            success: false,
+            message: "Erro no servidor."
+        });
     }
 });
 

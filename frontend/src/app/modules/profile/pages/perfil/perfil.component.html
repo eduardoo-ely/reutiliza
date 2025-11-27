@@ -1,36 +1,201 @@
-<div class="perfil-container" *ngIf="user">
-    <div class="perfil-header">
-        <div class="avatar-container">
-            <img src="assets/default-avatar.png" alt="Avatar do Utilizador" class="avatar">
-            <!-- Lógica para molduras pode ser adicionada aqui -->
-        </div>
-        <h2>{{ user.nome }}</h2>
-        <p class="bio">{{ user.bio }}</p>
-        <div class="pontos-container">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18.3 5.7 2.9 2.9a2 2 0 0 1 0 2.8L12 20.6a2 2 0 0 1-2.8 0L2.8 11.4a2 2 0 0 1 0-2.8l2.9-2.9a2 2 0 0 1 2.8 0L12 9.1l3.5-3.5a2 2 0 0 1 2.8 0Z"/></svg>
-            <span>{{ user.pontos }} Pontos</span>
-        </div>
+<div class="perfil-container">
+
+    <!-- Loading -->
+    <div class="loading-spinner" *ngIf="loading">
+        <div class="spinner"></div>
+        <p>Carregando perfil...</p>
     </div>
 
-    <div class="perfil-content">
-        <h3>Meus Badges</h3>
-        <div class="badges-container">
-            <!-- Lógica para mostrar os badges adquiridos -->
-            <span class="badge">Reciclador</span>
+    <!-- Conteúdo do Perfil -->
+    <div class="perfil-content" *ngIf="!loading && user">
+
+        <!-- Header do Perfil -->
+        <div class="perfil-header">
+            <!-- Avatar -->
+            <div class="avatar-container">
+                <div class="avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Info do Usuário -->
+            <h2 class="user-nome">{{ user.nome }}</h2>
+            <p class="user-email">{{ user.email }}</p>
+
+            <!-- Badge de Admin -->
+            <div class="admin-badge" *ngIf="isAdmin()">
+                👑 ADMINISTRADOR
+            </div>
+
+            <!-- Data de Cadastro -->
+            <p class="user-data-cadastro">
+                Membro desde {{ formatarDataCadastro() }}
+            </p>
+
+            <!-- Badge de Pontos -->
+            <div class="pontos-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18.3 5.7 2.9 2.9a2 2 0 0 1 0 2.8L12 20.6a2 2 0 0 1-2.8 0L2.8 11.4a2 2 0 0 1 0-2.8l2.9-2.9a2 2 0 0 1 2.8 0L12 8.4l3.5-3.5a2 2 0 0 1 2.8 0Z"/>
+                </svg>
+                <div class="pontos-info">
+                    <div class="pontos-valor">{{ getPontosDisponiveis() }}</div>
+                    <div class="pontos-label">pontos disponíveis</div>
+                </div>
+            </div>
         </div>
 
-        <h3>Histórico de Coletas</h3>
-        <p>Funcionalidade em construção.</p>
+        <!-- Grid de Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">♻️</div>
+                <div class="stat-value">{{ stats.totalReciclado.toFixed(1) }}kg</div>
+                <div class="stat-label">Total Reciclado</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value">{{ stats.pontosGanhos }}</div>
+                <div class="stat-label">Pontos Ganhos</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎁</div>
+                <div class="stat-value">{{ stats.recompensasResgatadas }}</div>
+                <div class="stat-label">Recompensas</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value">{{ stats.diasAtivo }}</div>
+                <div class="stat-label">Dias Ativos</div>
+            </div>
+        </div>
+
+        <!-- Progresso de Nível -->
+        <div class="nivel-section">
+            <div class="nivel-header">
+                <div class="nivel-titulo">
+                    <span class="nivel-emoji">{{ getTituloNivel() }}</span>
+                    <span class="nivel-numero">Nível {{ getNivel() }}</span>
+                </div>
+                <span class="nivel-pontos">{{ getPontosParaProximoNivel() }} para próximo</span>
+            </div>
+
+            <div class="progresso-barra">
+                <div class="progresso-fill" [style.width.%]="getProgressoNivel()"></div>
+            </div>
+        </div>
+
+        <!-- Conquistas -->
+        <div class="conquistas-section">
+            <h3>🏅 Conquistas ({{ getConquistasDesbloqueadas().length }}/{{ achievements.length }})</h3>
+
+            <!-- Conquistas Desbloqueadas -->
+            <div class="conquistas-grid" *ngIf="getConquistasDesbloqueadas().length > 0">
+                <div class="conquista-card unlocked" *ngFor="let achievement of getConquistasDesbloqueadas()">
+                    <div class="conquista-emoji">{{ achievement.emoji }}</div>
+                    <div class="conquista-info">
+                        <div class="conquista-titulo">{{ achievement.title }}</div>
+                        <div class="conquista-desc">{{ achievement.desc }}</div>
+                    </div>
+                    <div class="conquista-status">✓</div>
+                </div>
+            </div>
+
+            <!-- Conquistas Bloqueadas -->
+            <div class="conquistas-bloqueadas" *ngIf="getConquistasBloqueadas().length > 0">
+                <h4>🔒 Próximas Conquistas</h4>
+                <div class="conquistas-grid">
+                    <div class="conquista-card locked" *ngFor="let achievement of getConquistasBloqueadas()">
+                        <div class="conquista-emoji grayscale">{{ achievement.emoji }}</div>
+                        <div class="conquista-info">
+                            <div class="conquista-titulo">{{ achievement.title }}</div>
+                            <div class="conquista-desc">{{ achievement.desc }}</div>
+                        </div>
+                        <div class="conquista-status">🔒</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo de Atividades -->
+        <div class="atividades-section">
+            <h3>📊 Resumo de Atividades</h3>
+
+            <div class="atividade-item">
+                <div class="atividade-icon">✅</div>
+                <div class="atividade-content">
+                    <div class="atividade-label">Materiais Validados</div>
+                    <div class="atividade-value">{{ stats.materiaisValidados }}</div>
+                </div>
+            </div>
+
+            <div class="atividade-item" *ngIf="stats.materiaisPendentes > 0">
+                <div class="atividade-icon">⏳</div>
+                <div class="atividade-content">
+                    <div class="atividade-label">Materiais Pendentes</div>
+                    <div class="atividade-value">{{ stats.materiaisPendentes }}</div>
+                </div>
+            </div>
+
+            <div class="atividade-item">
+                <div class="atividade-icon">💰</div>
+                <div class="atividade-content">
+                    <div class="atividade-label">Pontos Utilizados</div>
+                    <div class="atividade-value">{{ user.pontosUtilizados || 0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links Rápidos -->
+        <div class="links-rapidos">
+            <h3>⚡ Ações Rápidas</h3>
+
+            <button class="link-button" (click)="navegarPara('/rota')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                Ver Pontos de Coleta
+            </button>
+
+            <button class="link-button" (click)="navegarPara('/pontos')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>
+                </svg>
+                Histórico de Pontos
+            </button>
+
+            <button class="link-button" (click)="navegarPara('/recompensas')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m18.3 5.7 2.9 2.9a2 2 0 0 1 0 2.8L12 20.6a2 2 0 0 1-2.8 0L2.8 11.4a2 2 0 0 1 0-2.8l2.9-2.9a2 2 0 0 1 2.8 0L12 8.4l3.5-3.5a2 2 0 0 1 2.8 0Z"/>
+                </svg>
+                Ver Recompensas
+            </button>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="action-buttons">
+            <button class="btn-logout" (click)="logout()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Sair da Conta
+            </button>
+        </div>
+
     </div>
 
-    <!-- Painel de Administrador (visível apenas para admins) -->
-    <div class="admin-panel" *ngIf="user.role === 'admin'">
-        <h3>Painel de Administrador</h3>
-        <p>Bem-vindo, Admin! Aqui você pode gerir a plataforma.</p>
-        <!-- A lista de utilizadores seria renderizada aqui -->
+    <!-- Estado de Erro -->
+    <div class="error-state" *ngIf="!loading && !user">
+        <div class="error-icon">⚠️</div>
+        <h3>Erro ao Carregar Perfil</h3>
+        <p>Não foi possível carregar suas informações.</p>
+        <button class="btn-retry" (click)="carregarDados()">Tentar Novamente</button>
     </div>
-</div>
 
-<div *ngIf="!user" class="loading">
-    <p>A carregar perfil...</p>
 </div>

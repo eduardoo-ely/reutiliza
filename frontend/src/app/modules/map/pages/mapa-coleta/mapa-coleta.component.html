@@ -9,36 +9,50 @@
         </div>
     </div>
 
-    <!-- MENU LATERAL -->
+    <!-- MENU LATERAL REDESENHADO -->
     <div class="material-menu">
 
         <!-- BOTÃO PRINCIPAL (abre/fecha) -->
-        <button class="material-main-btn" (click)="menuAberto = !menuAberto">
-            ♻️
+        <button
+                class="material-main-btn"
+                [class.has-route]="routingControl"
+                (click)="toggleMenu()"
+                [title]="menuAberto ? 'Fechar Menu' : 'Abrir Menu de Materiais'">
+            {{ menuAberto ? '✖' : '♻️' }}
         </button>
 
         <!-- SUBMENU DE MATERIAIS -->
-        <div class="material-submenu" *ngIf="menuAberto">
-            <button *ngFor="let material of materiaisDisponiveis"
+        <div class="material-submenu" *ngIf="menuAberto && materiaisDisponiveis.length > 0">
+            <button
+                    *ngFor="let material of materiaisDisponiveis; let i = index"
                     class="material-btn"
+                    [class.selected]="materialSelecionado === material.nome"
                     [title]="material.nome"
-                    (click)="tracarRotaParaMaterial(material.nome)">
+                    (click)="selecionarMaterial(material)">
                 {{ material.icone }}
             </button>
         </div>
 
-        <!-- BOTÃO LIMPAR -->
-        <button class="material-btn clear-btn"
-                title="Limpar rota"
+        <!-- Mensagem se não houver materiais -->
+        <div class="material-submenu" *ngIf="menuAberto && materiaisDisponiveis.length === 0" style="padding: 16px; text-align: center; color: #757575; font-size: 13px; width: 200px;">
+            <p style="margin: 0;">Nenhum material disponível nos pontos de coleta</p>
+        </div>
+
+        <!-- BOTÃO LIMPAR ROTA -->
+        <button
+                class="material-btn clear-btn"
+                *ngIf="routingControl"
+                title="Limpar Rota"
                 (click)="limparRota()">
             ✖
         </button>
 
-        <!-- BOTÃO BUSSOLA -->
-        <button class="material-btn recenter-btn"
-                title="Centralizar"
+        <!-- BOTÃO CENTRALIZAR -->
+        <button
+                class="material-btn recenter-btn"
+                title="Centralizar no Mapa"
                 (click)="recenterMap()">
-            <img src="assets/bussola.png" alt="Recenter">
+            <img src="assets/bussola.png" alt="Centralizar">
         </button>
     </div>
 

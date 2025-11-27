@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
-// ==========================================
 // INTERFACES
-// ==========================================
-
 export interface MaterialReciclado {
   _id?: string;
   usuario?: any;
@@ -69,8 +66,12 @@ export interface Recompensa {
   tipo: 'voucher' | 'brinde' | 'desconto';
   codigo?: string;
   disponivel: boolean;
+  ativo?: boolean;
   imagem?: string;
   validade?: Date;
+  categoria?: string;
+  quantidadeDisponivel?: number;
+  quantidadeResgatada?: number;
 }
 
 interface ApiResponse<T> {
@@ -233,20 +234,63 @@ export class MaterialRecicladoService {
   // ==========================================
 
   getRecompensasDisponiveis(): Observable<Recompensa[]> {
-    const params = new HttpParams().set('disponivel', 'true');
-    return this.http.get<ApiResponse<Recompensa[]>>(this.apiRecompensas, { params }).pipe(
+    console.log('🎁 Buscando recompensas disponíveis...');
+
+    return this.http.get<ApiResponse<Recompensa[]>>(`${this.apiRecompensas}?disponivel=true`).pipe(
+        tap(response => {
+          console.log('✅ Resposta do servidor:', response);
+        }),
+        map(response => {
+          const recompensas = response.data || [];
+          console.log(`✅ ${recompensas.length} recompensas encontradas`);
+          return recompensas;
+        }),
+        catchError(error => {
+          console.error('❌ Erro ao buscar recompensas:', error);
+          return this.handleError(error);
+        })
+    );
+  }
+
+  getTodasRecompensas(): Observable<Recompensa[]> {
+    return this.http.get<ApiResponse<Recompensa[]>>(this.apiRecompensas).pipe(
         map(response => response.data || []),
         catchError(this.handleError)
     );
   }
 
+  getRecompensaPorId(id: string): Observable<Recompensa> {
+    return this.http.get<ApiResponse<Recompensa>>(`${this.apiRecompensas}/${id}`).pipe(
+        map(response => {
+          if (!response.data) throw new Error('Recompensa não encontrada');
+          return response.data;
+        }),
+        catchError(this.handleError)
+    );
+  }
+
   resgatarRecompensa(recompensaId: string, usuarioId: string): Observable<any> {
+    console.log('🎁 Resgatando recompensa...');
+    console.log('   Recompensa ID:', recompensaId);
+    console.log('   Usuario ID:', usuarioId);
+
     return this.http.post<ApiResponse<any>>(`${this.apiRecompensas}/resgatar`, {
       recompensaId,
       usuarioId
     }).pipe(
-        map(response => response.data),
-        catchError(this.handleError)
+        tap(response => {
+          console.log('✅ Resposta do resgate:', response);
+        }),
+        map(response => {
+          if (!response.success) {
+            throw new Error(response.message || 'Erro ao resgatar recompensa');
+          }
+          return response.data;
+        }),
+        catchError(error => {
+          console.error('❌ Erro ao resgatar:', error);
+          return this.handleError(error);
+        })
     );
   }
 
@@ -258,14 +302,12 @@ export class MaterialRecicladoService {
     let errorMessage = 'Erro desconhecido';
 
     if (error.error instanceof ErrorEvent) {
-      // Erro do lado do cliente
       errorMessage = `Erro: ${error.error.message}`;
     } else {
-      // Erro do lado do servidor
       errorMessage = error.error?.message || `Erro ${error.status}: ${error.statusText}`;
     }
 
-    console.error('Erro na requisição:', errorMessage, error);
+    console.error('❌ Erro na requisição:', errorMessage, error);
     return throwError(() => new Error(errorMessage));
   }
 }

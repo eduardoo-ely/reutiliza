@@ -7,14 +7,12 @@ import { RecompensasListaComponent } from './recompensas-lista/recompensas-lista
     standalone: true,
     imports: [
         CommonModule,
-        RecompensasListaComponent   // <-- IMPORTA SEU COMPONENTE COMPLETO
+        RecompensasListaComponent
     ],
     template: `
     <div class="page-container">
       <h2>Recompensas</h2>
-
-      <!-- Componente de lista -->
-      <app-recompensas-lista></app-recompensas-lista>
+        <app-recompensas-lista></app-recompensas-lista>
     </div>
   `,
     styles: [`

@@ -24,11 +24,15 @@ export class RecompensasListaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('🎁 Inicializando componente de recompensas...');
+
     const user = this.userService.getLoggedInUser();
     if (user) {
       this.usuarioId = user.id;
+      console.log('👤 Usuário logado:', user.nome, '(ID:', user.id, ')');
       this.carregarDados();
     } else {
+      console.error('❌ Usuário não identificado');
       this.exibirMensagem('Usuário não identificado. Faça login novamente.', 'erro');
       this.carregando = false;
     }
@@ -36,28 +40,21 @@ export class RecompensasListaComponent implements OnInit {
 
   carregarDados(): void {
     this.carregando = true;
-
-    console.log('🎁 Carregando recompensas disponíveis...');
+    console.log('📦 Carregando recompensas e pontos...');
 
     // Carregar recompensas disponíveis
     this.materialService.getRecompensasDisponiveis().subscribe({
       next: (recompensas) => {
-        console.log('✅ Recompensas carregadas:', recompensas);
+        console.log('✅ Recompensas recebidas:', recompensas);
         this.recompensas = recompensas;
 
+        if (this.recompensas.length === 0) {
+          console.warn('⚠️ Nenhuma recompensa disponível no banco');
+          this.exibirMensagem('Nenhuma recompensa disponível no momento.', 'info');
+        }
+
         // Carregar pontos do usuário
-        this.materialService.getPontosUsuario(this.usuarioId).subscribe({
-          next: (pontos) => {
-            console.log('✅ Pontos do usuário:', pontos);
-            this.pontosUsuario = pontos;
-            this.carregando = false;
-          },
-          error: (err) => {
-            console.error('❌ Erro ao carregar pontos:', err);
-            this.carregando = false;
-            this.exibirMensagem('Erro ao carregar seus pontos.', 'erro');
-          }
-        });
+        this.carregarPontos();
       },
       error: (err) => {
         console.error('❌ Erro ao carregar recompensas:', err);
@@ -67,7 +64,26 @@ export class RecompensasListaComponent implements OnInit {
     });
   }
 
+  carregarPontos(): void {
+    console.log('💰 Carregando pontos do usuário...');
+
+    this.materialService.getPontosUsuario(this.usuarioId).subscribe({
+      next: (pontos) => {
+        console.log('✅ Pontos recebidos:', pontos);
+        this.pontosUsuario = pontos;
+        this.carregando = false;
+      },
+      error: (err) => {
+        console.error('❌ Erro ao carregar pontos:', err);
+        this.carregando = false;
+        this.exibirMensagem('Erro ao carregar seus pontos.', 'erro');
+      }
+    });
+  }
+
   resgatarRecompensa(recompensa: Recompensa): void {
+    console.log('🎁 Tentando resgatar:', recompensa.nome);
+
     if (!this.podeResgatar(recompensa)) {
       this.exibirMensagem('Você não possui pontos suficientes para resgatar esta recompensa.', 'erro');
       return;
@@ -78,22 +94,42 @@ export class RecompensasListaComponent implements OnInit {
       return;
     }
 
-    // Confirmar com o usuário
-    const confirmar = confirm(`Deseja resgatar "${recompensa.nome || recompensa.titulo}" por ${this.getPontosNecessarios(recompensa)} pontos?`);
+    const pontosNecessarios = this.getPontosNecessarios(recompensa);
+    const nomeRecompensa = this.getNomeRecompensa(recompensa);
+
+    const confirmar = confirm(
+        `Deseja resgatar "${nomeRecompensa}" por ${pontosNecessarios} pontos?\n\n` +
+        `Seus pontos disponíveis: ${this.getPontosDisponiveis()}\n` +
+        `Após o resgate: ${this.getPontosDisponiveis() - pontosNecessarios} pontos`
+    );
+
     if (!confirmar) return;
 
-    console.log('🎁 Resgatando recompensa:', recompensa._id);
+    console.log('✅ Usuário confirmou o resgate');
+    console.log('   Recompensa ID:', recompensa._id);
+    console.log('   Usuario ID:', this.usuarioId);
 
     this.materialService.resgatarRecompensa(recompensa._id, this.usuarioId).subscribe({
       next: (response) => {
-        console.log('✅ Recompensa resgatada:', response);
-        this.exibirMensagem(
-            `Recompensa "${recompensa.nome || recompensa.titulo}" resgatada com sucesso!`,
-            'sucesso'
-        );
+        console.log('✅ Recompensa resgatada com sucesso:', response);
 
-        // Recarregar dados
-        setTimeout(() => this.carregarDados(), 1500);
+        let mensagemSucesso = `Recompensa "${nomeRecompensa}" resgatada com sucesso!`;
+
+        if (response && response.recompensa && response.recompensa.codigo) {
+          mensagemSucesso += `\n\nCódigo: ${response.recompensa.codigo}`;
+
+          // Copiar código para clipboard
+          navigator.clipboard.writeText(response.recompensa.codigo).then(() => {
+            console.log('📋 Código copiado para clipboard');
+          }).catch(err => {
+            console.error('❌ Erro ao copiar código:', err);
+          });
+        }
+
+        this.exibirMensagem(mensagemSucesso, 'sucesso');
+
+        // Recarregar dados após 2 segundos
+        setTimeout(() => this.carregarDados(), 2000);
       },
       error: (err) => {
         console.error('❌ Erro ao resgatar recompensa:', err);
@@ -120,12 +156,8 @@ export class RecompensasListaComponent implements OnInit {
     return recompensa.nome || recompensa.titulo || 'Recompensa';
   }
 
-  exibirMensagem(texto: string, tipo: 'sucesso' | 'erro' | 'info'): void {
-    this.mensagem = texto;
-    this.tipoMensagem = tipo;
-    setTimeout(() => {
-      this.mensagem = '';
-    }, 5000);
+  getImagemRecompensa(recompensa: Recompensa): string {
+    return recompensa.imagem || 'assets/images/reward-placeholder.jpg';
   }
 
   formatarValidade(data: Date | undefined): string {
@@ -137,7 +169,19 @@ export class RecompensasListaComponent implements OnInit {
     });
   }
 
+  exibirMensagem(texto: string, tipo: 'sucesso' | 'erro' | 'info'): void {
+    this.mensagem = texto;
+    this.tipoMensagem = tipo;
+
+    console.log(`${tipo === 'sucesso' ? '✅' : tipo === 'erro' ? '❌' : 'ℹ️'} ${texto}`);
+
+    setTimeout(() => {
+      this.mensagem = '';
+    }, 5000);
+  }
+
   recarregar(): void {
+    console.log('🔄 Recarregando dados...');
     this.carregarDados();
   }
 }
