@@ -1,22 +1,41 @@
+<!-- frontend/src/app/modules/admin/dashboard-admin/dashboard-admin.component.html -->
 <div class="dashboard-admin">
-    <!-- Header -->
-    <div class="header">
-        <h1>📊 Painel Administrativo Reutiliza</h1>
+    <!-- Header Mobile com Menu Hamburguer -->
+    <div class="mobile-header">
+        <h1>📊 Admin</h1>
+        <button class="menu-toggle" (click)="toggleMenuMobile()">
+            <span *ngIf="!menuMobileAberto">☰</span>
+            <span *ngIf="menuMobileAberto">✖</span>
+        </button>
+    </div>
 
-        <div class="filtros">
-            <button (click)="alterarPeriodo(7)" [class.ativo]="periodo === 7">
-                Últimos 7 dias
-            </button>
-            <button (click)="alterarPeriodo(30)" [class.ativo]="periodo === 30">
-                Últimos 30 dias
-            </button>
-            <button (click)="alterarPeriodo(90)" [class.ativo]="periodo === 90">
-                Últimos 90 dias
-            </button>
-            <button (click)="carregarMetricas()" class="refresh">
-                🔄 Atualizar
-            </button>
+    <!-- Header Desktop -->
+    <div class="header desktop-only">
+        <div class="header-content">
+            <h1>📊 Painel Administrativo</h1>
+            <div class="filtros">
+                <button (click)="alterarPeriodo(7)" [class.ativo]="periodo === 7">
+                    7 dias
+                </button>
+                <button (click)="alterarPeriodo(30)" [class.ativo]="periodo === 30">
+                    30 dias
+                </button>
+                <button (click)="alterarPeriodo(90)" [class.ativo]="periodo === 90">
+                    90 dias
+                </button>
+                <button (click)="carregarMetricas()" class="btn-refresh">
+                    🔄
+                </button>
+            </div>
         </div>
+    </div>
+
+    <!-- Filtros Mobile -->
+    <div class="filtros-mobile mobile-only" *ngIf="!carregando">
+        <button (click)="alterarPeriodo(7)" [class.ativo]="periodo === 7">7d</button>
+        <button (click)="alterarPeriodo(30)" [class.ativo]="periodo === 30">30d</button>
+        <button (click)="alterarPeriodo(90)" [class.ativo]="periodo === 90">90d</button>
+        <button (click)="carregarMetricas()" class="btn-refresh">🔄</button>
     </div>
 
     <!-- Loading -->
@@ -28,31 +47,31 @@
     <!-- Erro -->
     <div *ngIf="erro && !carregando" class="erro">
         <p>{{ erro }}</p>
-        <button (click)="carregarMetricas()">Tentar novamente</button>
+        <button (click)="carregarMetricas()" class="btn-retry">Tentar novamente</button>
     </div>
 
-    <!-- Dashboard -->
+    <!-- Dashboard Content -->
     <div *ngIf="metricas && !carregando" class="dashboard-content">
 
         <!-- Alertas Urgentes -->
         <div class="alertas-section" *ngIf="metricas.alertas.denunciasPendentes > 0 || metricas.alertas.materiaisPendentes > 0">
-            <h2>⚠️ Alertas</h2>
+            <h2 class="section-title">⚠️ Alertas</h2>
             <div class="alertas-grid">
-                <div class="alerta urgente" *ngIf="metricas.alertas.denunciasPendentes > 0"
+                <div class="alerta-card urgente" *ngIf="metricas.alertas.denunciasPendentes > 0"
                      (click)="navegarPara('denuncias')">
                     <div class="alerta-icon">🚨</div>
                     <div class="alerta-info">
                         <h3>{{ metricas.alertas.denunciasPendentes }}</h3>
-                        <p>Denúncias Pendentes</p>
+                        <p>Denúncias</p>
                     </div>
                 </div>
 
-                <div class="alerta aviso" *ngIf="metricas.alertas.materiaisPendentes > 0"
+                <div class="alerta-card aviso" *ngIf="metricas.alertas.materiaisPendentes > 0"
                      (click)="navegarPara('validacao')">
                     <div class="alerta-icon">⏳</div>
                     <div class="alerta-info">
                         <h3>{{ metricas.alertas.materiaisPendentes }}</h3>
-                        <p>Materiais Pendentes</p>
+                        <p>Pendentes</p>
                     </div>
                 </div>
             </div>
@@ -60,136 +79,132 @@
 
         <!-- Cards de Métricas -->
         <div class="metricas-grid">
-
             <!-- Card Usuários -->
-            <div class="metric-card usuarios" (click)="navegarPara('usuarios')">
-                <div class="card-header">
-                    <h3>👥 Usuários</h3>
-                    <span class="badge">{{ metricas.usuarios.total }}</span>
-                </div>
-                <div class="card-body">
-                    <div class="metric-row">
-                        <span>Ativos (últimos {{ periodo }} dias)</span>
-                        <strong>{{ metricas.usuarios.ativos }}</strong>
+            <div class="metric-card" (click)="navegarPara('usuarios')">
+                <div class="card-icon">👥</div>
+                <div class="card-content">
+                    <h3>Usuários</h3>
+                    <div class="metric-value">{{ metricas.usuarios.total }}</div>
+                    <div class="metric-details">
+                        <span>✅ {{ metricas.usuarios.ativos }} ativos</span>
+                        <span>🆕 {{ metricas.usuarios.novos }} novos</span>
                     </div>
-                    <div class="metric-row">
-                        <span>Novos</span>
-                        <strong>{{ metricas.usuarios.novos }}</strong>
+                    <div class="metric-footer" [ngClass]="getCorCrescimento(metricas.usuarios.crescimento)">
+                        {{ getIconeCrescimento(metricas.usuarios.crescimento) }}
+                        {{ metricas.usuarios.crescimento }}%
                     </div>
-                    <div class="metric-row">
-                        <span>Taxa de Ativação</span>
-                        <strong>{{ metricas.usuarios.taxaAtivacao }}%</strong>
-                    </div>
-                </div>
-                <div class="card-footer" [ngClass]="getCorCrescimento(metricas.usuarios.crescimento)">
-                    <span>{{ getIconeCrescimento(metricas.usuarios.crescimento) }}</span>
-                    <span>{{ metricas.usuarios.crescimento }}% vs período anterior</span>
                 </div>
             </div>
 
             <!-- Card Materiais -->
-            <div class="metric-card materiais" (click)="navegarPara('materiais')">
-                <div class="card-header">
-                    <h3>♻️ Materiais</h3>
-                    <span class="badge">{{ metricas.materiais.total }}</span>
-                </div>
-                <div class="card-body">
-                    <div class="metric-row">
-                        <span>Validados</span>
-                        <strong>{{ metricas.materiais.validados }}</strong>
+            <div class="metric-card" (click)="navegarPara('materiais')">
+                <div class="card-icon">♻️</div>
+                <div class="card-content">
+                    <h3>Materiais</h3>
+                    <div class="metric-value">{{ metricas.materiais.total }}</div>
+                    <div class="metric-details">
+                        <span>✅ {{ metricas.materiais.validados }}</span>
+                        <span>⏳ {{ metricas.materiais.pendentes }}</span>
                     </div>
-                    <div class="metric-row">
-                        <span>Pendentes</span>
-                        <strong class="pendente">{{ metricas.materiais.pendentes }}</strong>
+                    <div class="metric-footer" [ngClass]="getCorCrescimento(metricas.materiais.crescimento)">
+                        {{ getIconeCrescimento(metricas.materiais.crescimento) }}
+                        {{ metricas.materiais.crescimento }}%
                     </div>
-                    <div class="metric-row">
-                        <span>Taxa de Validação</span>
-                        <strong>{{ metricas.materiais.taxaValidacao }}%</strong>
-                    </div>
-                </div>
-                <div class="card-footer" [ngClass]="getCorCrescimento(metricas.materiais.crescimento)">
-                    <span>{{ getIconeCrescimento(metricas.materiais.crescimento) }}</span>
-                    <span>{{ metricas.materiais.crescimento }}% vs período anterior</span>
                 </div>
             </div>
 
-            <!-- Card Pontos de Coleta -->
-            <div class="metric-card pontos" (click)="navegarPara('pontos')">
-                <div class="card-header">
-                    <h3>📍 Pontos de Coleta</h3>
-                    <span class="badge">{{ metricas.pontos.total }}</span>
-                </div>
-                <div class="card-body">
-                    <div class="metric-row">
-                        <span>Ativos</span>
-                        <strong class="success">{{ metricas.pontos.ativos }}</strong>
-                    </div>
-                    <div class="metric-row">
-                        <span>Inativos</span>
-                        <strong class="danger">{{ metricas.pontos.inativos }}</strong>
-                    </div>
-                    <div class="metric-row">
-                        <span>Média usuários/ponto</span>
-                        <strong>{{ metricas.pontos.mediaUsuariosPorPonto }}</strong>
+            <!-- Card Pontos -->
+            <div class="metric-card" (click)="navegarPara('pontos')">
+                <div class="card-icon">📍</div>
+                <div class="card-content">
+                    <h3>Pontos</h3>
+                    <div class="metric-value">{{ metricas.pontos.total }}</div>
+                    <div class="metric-details">
+                        <span>✅ {{ metricas.pontos.ativos }} ativos</span>
+                        <span>❌ {{ metricas.pontos.inativos }} inativos</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card Recompensas -->
-            <div class="metric-card recompensas" (click)="navegarPara('recompensas')">
-                <div class="card-header">
-                    <h3>🎁 Recompensas</h3>
-                    <span class="badge">{{ metricas.recompensas.totalResgates }}</span>
-                </div>
-                <div class="card-body">
-                    <div class="metric-row">
-                        <span>Resgates ({{ periodo }} dias)</span>
-                        <strong>{{ metricas.recompensas.totalResgates }}</strong>
-                    </div>
-                    <div class="metric-row">
-                        <span>Pontos em Circulação</span>
-                        <strong>{{ metricas.recompensas.pontosEmCirculacao }}</strong>
+            <div class="metric-card" (click)="navegarPara('recompensas')">
+                <div class="card-icon">🎁</div>
+                <div class="card-content">
+                    <h3>Recompensas</h3>
+                    <div class="metric-value">{{ metricas.recompensas.totalResgates }}</div>
+                    <div class="metric-details">
+                        <span>💰 {{ metricas.recompensas.pontosEmCirculacao }} pts</span>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- Ações Rápidas -->
-        <div class="acoes-rapidas">
-            <h2>⚡ Ações Rápidas</h2>
+        <div class="acoes-section">
+            <h2 class="section-title">⚡ Ações Rápidas</h2>
             <div class="acoes-grid">
-                <button class="acao-btn" (click)="navegarPara('denuncias')">
-                    <span class="acao-icon">🚨</span>
-                    <span>Gerenciar Denúncias</span>
-                </button>
-
                 <button class="acao-btn" (click)="navegarPara('validacao')">
                     <span class="acao-icon">✅</span>
-                    <span>Validar Materiais</span>
+                    <span class="acao-text">Validar Materiais</span>
                 </button>
 
-                <button class="acao-btn" (click)="navegarPara('pontos')">
-                    <span class="acao-icon">📍</span>
-                    <span>Gerenciar Pontos</span>
+                <button class="acao-btn" (click)="navegarPara('denuncias')">
+                    <span class="acao-icon">🚨</span>
+                    <span class="acao-text">Denúncias</span>
                 </button>
 
                 <button class="acao-btn" (click)="navegarPara('usuarios')">
                     <span class="acao-icon">👥</span>
-                    <span>Gerenciar Usuários</span>
+                    <span class="acao-text">Usuários</span>
+                </button>
+
+                <button class="acao-btn" (click)="navegarPara('pontos')">
+                    <span class="acao-icon">📍</span>
+                    <span class="acao-text">Pontos</span>
                 </button>
 
                 <button class="acao-btn" (click)="navegarPara('recompensas')">
                     <span class="acao-icon">🎁</span>
-                    <span>Gerenciar Recompensas</span>
+                    <span class="acao-text">Recompensas</span>
                 </button>
 
                 <button class="acao-btn" (click)="navegarPara('metricas')">
                     <span class="acao-icon">📊</span>
-                    <span>Ver Métricas Completas</span>
+                    <span class="acao-text">Métricas</span>
                 </button>
             </div>
         </div>
+    </div>
 
+    <!-- Menu Mobile Overlay -->
+    <div class="mobile-menu-overlay" *ngIf="menuMobileAberto" (click)="toggleMenuMobile()"></div>
+    <div class="mobile-menu" [class.aberto]="menuMobileAberto">
+        <div class="mobile-menu-header">
+            <h3>Menu Admin</h3>
+            <button class="close-btn" (click)="toggleMenuMobile()">✖</button>
+        </div>
+        <div class="mobile-menu-content">
+            <button class="menu-item" (click)="navegarPara('usuarios'); toggleMenuMobile()">
+                <span>👥</span> Usuários
+            </button>
+            <button class="menu-item" (click)="navegarPara('materiais'); toggleMenuMobile()">
+                <span>♻️</span> Materiais
+            </button>
+            <button class="menu-item" (click)="navegarPara('pontos'); toggleMenuMobile()">
+                <span>📍</span> Pontos de Coleta
+            </button>
+            <button class="menu-item" (click)="navegarPara('recompensas'); toggleMenuMobile()">
+                <span>🎁</span> Recompensas
+            </button>
+            <button class="menu-item" (click)="navegarPara('denuncias'); toggleMenuMobile()">
+                <span>🚨</span> Denúncias
+            </button>
+            <button class="menu-item" (click)="navegarPara('metricas'); toggleMenuMobile()">
+                <span>📊</span> Métricas
+            </button>
+            <button class="menu-item" (click)="router.navigate(['/']); toggleMenuMobile()">
+                <span>🏠</span> Voltar ao App
+            </button>
+        </div>
     </div>
 </div>

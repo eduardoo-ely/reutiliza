@@ -1,39 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
-
-interface MetricasGerais {
-    usuarios: {
-        total: number;
-        ativos: number;
-        novos: number;
-        crescimento: number;
-        taxaAtivacao: string;
-    };
-    materiais: {
-        total: number;
-        validados: number;
-        pendentes: number;
-        crescimento: number;
-        taxaValidacao: string;
-    };
-    pontos: {
-        total: number;
-        ativos: number;
-        inativos: number;
-        mediaUsuariosPorPonto: string;
-    };
-    recompensas: {
-        totalResgates: number;
-        pontosEmCirculacao: number;
-    };
-    alertas: {
-        denunciasPendentes: number;
-        materiaisPendentes: number;
-    };
-}
+import { AdminService, MetricasGerais } from '../../../core/services/admin.service';
 
 @Component({
     selector: 'app-dashboard-admin',
@@ -47,13 +15,19 @@ export class DashboardAdminComponent implements OnInit {
     carregando = true;
     periodo = 30;
     erro = '';
+    menuMobileAberto = false;
 
     constructor(
-        private http: HttpClient,
+        private adminService: AdminService,
         private router: Router
     ) {}
 
     ngOnInit() {
+        if (!this.adminService.isAdmin()) {
+            alert('❌ Acesso negado. Apenas administradores podem acessar esta área.');
+            this.router.navigate(['/']);
+            return;
+        }
         this.carregarMetricas();
     }
 
@@ -61,9 +35,7 @@ export class DashboardAdminComponent implements OnInit {
         this.carregando = true;
         this.erro = '';
 
-        const url = `${environment.apiUrl}/admin/metricas/geral?periodo=${this.periodo}`;
-
-        this.http.get<any>(url).subscribe({
+        this.adminService.getMetricasGerais(this.periodo).subscribe({
             next: (response) => {
                 if (response.success) {
                     this.metricas = response.data;
@@ -87,10 +59,14 @@ export class DashboardAdminComponent implements OnInit {
         this.router.navigate([`/admin/${rota}`]);
     }
 
+    toggleMenuMobile() {
+        this.menuMobileAberto = !this.menuMobileAberto;
+    }
+
     getCorCrescimento(crescimento: number): string {
-        if (crescimento > 0) return 'text-green-600';
-        if (crescimento < 0) return 'text-red-600';
-        return 'text-gray-600';
+        if (crescimento > 0) return 'text-green';
+        if (crescimento < 0) return 'text-red';
+        return 'text-gray';
     }
 
     getIconeCrescimento(crescimento: number): string {

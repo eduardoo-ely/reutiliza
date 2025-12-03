@@ -15,6 +15,7 @@ const dbRoutes = require('./src/routes/db.routes');
 const notificacaoRoutes = require('./src/routes/notificacao.routes');
 const estoqueRoutes = require('./src/routes/estoque.routes');
 const dashboardRoutes = require('./src/routes/dashboard.routes');
+const adminRoutes = require('./src/routes/admin.routes'); // ← ADICIONAR
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,9 +23,9 @@ const HOST = process.env.HOST || 'localhost';
 
 // Middlewares globais
 app.use(cors({
-    origin: '*', // Em produção, especifique os domínios permitidos
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id'] // ← ADICIONAR x-user-id
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -71,6 +72,7 @@ app.get('/', (req, res) => {
             notificacoes: '/api/notificacoes',
             estoque: '/api/estoque',
             dashboard: '/api/dashboard',
+            admin: '/api/admin', // ← ADICIONAR
             database: '/api/db'
         },
         novidades_sprint3: [
@@ -79,7 +81,8 @@ app.get('/', (req, res) => {
             '📊 Movimentações de Estoque',
             '💰 Histórico Completo de Transações de Pontos',
             '✅ Validação Cruzada Aprimorada',
-            '🎁 Sistema de Recompensas Expandido'
+            '🎁 Sistema de Recompensas Expandido',
+            '👑 Painel Administrativo Completo' // ← ADICIONAR
         ]
     });
 });
@@ -95,6 +98,7 @@ app.use('/api/notificacoes', notificacaoRoutes);
 app.use('/api/estoque', estoqueRoutes);
 app.use('/api/db', dbRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin', adminRoutes); // ← ADICIONAR
 
 // Rota 404
 app.use((req, res) => {
@@ -129,10 +133,11 @@ app.listen(PORT, HOST, () => {
     console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
     console.log(`📦 Versão: 2.0.0`);
     console.log('='.repeat(60));
-    console.log('\n🆕 Novos endpoints disponíveis:');
+    console.log('\n🆕 Endpoints disponíveis:');
     console.log('   🔔 /api/notificacoes - Sistema de notificações');
     console.log('   📦 /api/estoque - Controle de estoque');
-    console.log('   📊 /api/estoque/movimentacoes - Movimentações');
+    console.log('   📊 /api/dashboard - Dashboards e métricas');
+    console.log('   👑 /api/admin - Painel administrativo'); // ← ADICIONAR
     console.log('='.repeat(60) + '\n');
 });
 
