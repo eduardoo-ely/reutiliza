@@ -8,8 +8,14 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "scripts": {
+      "build:etl": "tsc",
+      "start:etl": "node dist/index.js",
+      "dev:etl": "ts-node etl/index.ts"
+    }
   },
-  "include": ["etl/**/*.ts"],
   "exclude": ["node_modules"]
 }

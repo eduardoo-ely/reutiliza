@@ -1,53 +1,71 @@
-# Node
+# ==================================
+# 1. GERAL & SISTEMA
+# ==================================
+# Dependências (em qualquer nível)
 node_modules/
+
+# Logs e Erros
+*.log
 npm-debug.log*
+yarn-debug.log*
 yarn-error.log*
-package-lock.json
-yarn.lock
 
-# Angular / Frontend
-.angular/
-dist/
-build/
-*.log
-
-# IDEs
-.idea/
-.vscode/
-*.swp
-
-# Capacitor / Mobile
-android/
-ios/
-capacitor.config.json
-plugins/
-
-# Env
-.env
-.env.local
-.env.*.local
-
-# Logs / Temp
-*.log
-*.tmp
-*.cache
-*.tsbuildinfo
-
-# Sistema / OS
+# Ficheiros de Sistema Operativo
 .DS_Store
 Thumbs.db
+.fsevents_cache
 
-# Public / Assets
-public/assets/
-public/favicon.ico
+# ==================================
+# 2. IDE & EDITORES (Lixo para remover)
+# ==================================
+.idea/
+.vscode/
+*.iml
+*.swp
+*.tsbuildinfo
 
-# Backend
-backend/node_modules/
+# ==================================
+# 3. BACKEND (Node/Express)
+# ==================================
+# IMPORTANTE: Nunca enviar chaves secretas
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Build e Cobertura de Testes
 backend/dist/
-backend/build/
+backend/coverage/
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/build/
+# ==================================
+# 4. FRONTEND (Angular)
+# ==================================
 frontend/.angular/
+frontend/dist/
+frontend/out/
+frontend/coverage/
+
+# Pasta de build usada pelo Capacitor (não deve ir para o git)
+frontend/www/
+
+# ==================================
+# 5. MOBILE (Capacitor / Android / iOS)
+# ==================================
+# Nota: Não ignoramos as pastas 'android' e 'ios' inteiras,
+# apenas os ficheiros gerados automaticamente dentro delas.
+
+# Capacitor
+capacitor.config.json.timestamp
+plugins/
+
+# Android - Ignorar builds e caches
+**/.gradle/
+**/build/
+**/captures/
+*.apk
+android/local.properties
+
+# iOS - Ignorar dados de utilizador e pods
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/Pods/
+**/Pods/

@@ -114,7 +114,6 @@ Frontend em: <http://localhost:4200>
 
 ## 👨‍💻 Autores
 
--   **Eduardo de Paula** -- Desenvolvimento Full-stack\
 -   Projeto acadêmico de **Ciência da Computação - Unochapecó**
 
 ------------------------------------------------------------------------
