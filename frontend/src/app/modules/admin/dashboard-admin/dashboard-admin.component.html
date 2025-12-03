@@ -1,181 +1,193 @@
-<div class="dashboard-container">
-    <div class="dashboard-header">
-        <h2>📊 Dashboard Administrativo</h2>
-        <div class="periodo-selector">
-            <button
-                    [class.active]="periodo === 7"
-                    (click)="mudarPeriodo(7)">
-                7 dias
+<div class="dashboard-admin">
+    <!-- Header -->
+    <div class="header">
+        <h1>📊 Painel Administrativo Reutiliza</h1>
+
+        <div class="filtros">
+            <button (click)="alterarPeriodo(7)" [class.ativo]="periodo === 7">
+                Últimos 7 dias
             </button>
-            <button
-                    [class.active]="periodo === 30"
-                    (click)="mudarPeriodo(30)">
-                30 dias
+            <button (click)="alterarPeriodo(30)" [class.ativo]="periodo === 30">
+                Últimos 30 dias
             </button>
-            <button
-                    [class.active]="periodo === 90"
-                    (click)="mudarPeriodo(90)">
-                90 dias
+            <button (click)="alterarPeriodo(90)" [class.ativo]="periodo === 90">
+                Últimos 90 dias
+            </button>
+            <button (click)="carregarMetricas()" class="refresh">
+                🔄 Atualizar
             </button>
         </div>
     </div>
 
     <!-- Loading -->
-    <div class="loading-spinner" *ngIf="carregando">
+    <div *ngIf="carregando" class="loading">
         <div class="spinner"></div>
-        <p>Carregando dashboard...</p>
+        <p>Carregando métricas...</p>
     </div>
 
     <!-- Erro -->
-    <div class="alert alert-danger" *ngIf="mensagemErro && !carregando">
-        ❌ {{ mensagemErro }}
+    <div *ngIf="erro && !carregando" class="erro">
+        <p>{{ erro }}</p>
+        <button (click)="carregarMetricas()">Tentar novamente</button>
     </div>
 
-    <!-- Dashboard Content -->
-    <div class="dashboard-content" *ngIf="!carregando && dashboardData">
+    <!-- Dashboard -->
+    <div *ngIf="metricas && !carregando" class="dashboard-content">
 
-        <!-- Cards de Resumo -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ dashboardData.resumo.totalUsuarios }}</div>
-                    <div class="stat-label">Usuários Cadastrados</div>
+        <!-- Alertas Urgentes -->
+        <div class="alertas-section" *ngIf="metricas.alertas.denunciasPendentes > 0 || metricas.alertas.materiaisPendentes > 0">
+            <h2>⚠️ Alertas</h2>
+            <div class="alertas-grid">
+                <div class="alerta urgente" *ngIf="metricas.alertas.denunciasPendentes > 0"
+                     (click)="navegarPara('denuncias')">
+                    <div class="alerta-icon">🚨</div>
+                    <div class="alerta-info">
+                        <h3>{{ metricas.alertas.denunciasPendentes }}</h3>
+                        <p>Denúncias Pendentes</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">📍</div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ dashboardData.resumo.totalPontoColetas }}</div>
-                    <div class="stat-label">Pontos de Coleta</div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">♻️</div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ dashboardData.resumo.materiaisValidados }}</div>
-                    <div class="stat-label">Materiais Validados</div>
-                </div>
-            </div>
-
-            <div class="stat-card warning" *ngIf="dashboardData.resumo.materiaisPendentes > 0">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ dashboardData.resumo.materiaisPendentes }}</div>
-                    <div class="stat-label">Pendentes de Validação</div>
-                </div>
-            </div>
-
-            <div class="stat-card success">
-                <div class="stat-icon">✅</div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ dashboardData.resumo.taxaValidacao }}%</div>
-                    <div class="stat-label">Taxa de Validação</div>
-                </div>
-            </div>
-
-            <div class="stat-card danger" *ngIf="dashboardData.resumo.alertasEstoque > 0">
-                <div class="stat-icon">⚠️</div>
-                <div class="stat-info">
-                    <div class="stat-value">{{ dashboardData.resumo.alertasEstoque }}</div>
-                    <div class="stat-label">Alertas de Estoque</div>
+                <div class="alerta aviso" *ngIf="metricas.alertas.materiaisPendentes > 0"
+                     (click)="navegarPara('validacao')">
+                    <div class="alerta-icon">⏳</div>
+                    <div class="alerta-info">
+                        <h3>{{ metricas.alertas.materiaisPendentes }}</h3>
+                        <p>Materiais Pendentes</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Materiais por Tipo -->
-        <div class="section-card">
-            <h3>♻️ Materiais por Tipo</h3>
-            <div class="materiais-list">
-                <div class="material-item" *ngFor="let material of dashboardData.materiaisPorTipo">
-                    <div class="material-icon">{{ getIconeMaterial(material._id) }}</div>
-                    <div class="material-info">
-                        <div class="material-nome">{{ material._id }}</div>
-                        <div class="material-stats">
-                            <span>{{ material.totalQuantidade }}kg</span>
-                            <span>•</span>
-                            <span>{{ material.totalPontos }} pontos</span>
-                            <span>•</span>
-                            <span>{{ material.count }} registros</span>
-                        </div>
+        <!-- Cards de Métricas -->
+        <div class="metricas-grid">
+
+            <!-- Card Usuários -->
+            <div class="metric-card usuarios" (click)="navegarPara('usuarios')">
+                <div class="card-header">
+                    <h3>👥 Usuários</h3>
+                    <span class="badge">{{ metricas.usuarios.total }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="metric-row">
+                        <span>Ativos (últimos {{ periodo }} dias)</span>
+                        <strong>{{ metricas.usuarios.ativos }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Novos</span>
+                        <strong>{{ metricas.usuarios.novos }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Taxa de Ativação</span>
+                        <strong>{{ metricas.usuarios.taxaAtivacao }}%</strong>
                     </div>
                 </div>
-
-                <div class="empty-state" *ngIf="dashboardData.materiaisPorTipo.length === 0">
-                    <p>Nenhum material reciclado no período selecionado</p>
+                <div class="card-footer" [ngClass]="getCorCrescimento(metricas.usuarios.crescimento)">
+                    <span>{{ getIconeCrescimento(metricas.usuarios.crescimento) }}</span>
+                    <span>{{ metricas.usuarios.crescimento }}% vs período anterior</span>
                 </div>
             </div>
-        </div>
 
-        <!-- Top 5 Pontos de Coleta -->
-        <div class="section-card">
-            <h3>🏆 Top Pontos de Coleta</h3>
-            <div class="pontos-list">
-                <div class="ponto-item" *ngFor="let ponto of dashboardData.materiaisPorPonto.slice(0, 5); let i = index">
-                    <div class="ponto-posicao">{{ i + 1 }}º</div>
-                    <div class="ponto-info">
-                        <div class="ponto-nome">{{ ponto.pontoNome }}</div>
-                        <div class="ponto-endereco">{{ ponto.pontoEndereco }}</div>
-                        <div class="ponto-stats">
-                            {{ ponto.totalQuantidade }}kg • {{ ponto.totalMateriais }} materiais
-                        </div>
+            <!-- Card Materiais -->
+            <div class="metric-card materiais" (click)="navegarPara('materiais')">
+                <div class="card-header">
+                    <h3>♻️ Materiais</h3>
+                    <span class="badge">{{ metricas.materiais.total }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="metric-row">
+                        <span>Validados</span>
+                        <strong>{{ metricas.materiais.validados }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Pendentes</span>
+                        <strong class="pendente">{{ metricas.materiais.pendentes }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Taxa de Validação</span>
+                        <strong>{{ metricas.materiais.taxaValidacao }}%</strong>
                     </div>
                 </div>
-
-                <div class="empty-state" *ngIf="dashboardData.materiaisPorPonto.length === 0">
-                    <p>Nenhum material registrado nos pontos de coleta</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tendência (últimos 7 dias) -->
-        <div class="section-card">
-            <h3>📈 Tendência de Reciclagem (últimos 7 dias)</h3>
-            <div class="tendencia-list">
-                <div class="tendencia-item" *ngFor="let dia of dashboardData.tendencia">
-                    <div class="tendencia-data">{{ dia._id }}</div>
-                    <div class="tendencia-barra">
-                        <div
-                                class="tendencia-progresso"
-                                [style.width.%]="(dia.totalQuantidade / getMaxTendencia()) * 100">
-                        </div>
-                    </div>
-                    <div class="tendencia-valor">
-                        {{ dia.totalQuantidade }}kg ({{ dia.totalMateriais }} materiais)
-                    </div>
-                </div>
-
-                <div class="empty-state" *ngIf="dashboardData.tendencia.length === 0">
-                    <p>Sem dados de tendência para os últimos 7 dias</p>
+                <div class="card-footer" [ngClass]="getCorCrescimento(metricas.materiais.crescimento)">
+                    <span>{{ getIconeCrescimento(metricas.materiais.crescimento) }}</span>
+                    <span>{{ metricas.materiais.crescimento }}% vs período anterior</span>
                 </div>
             </div>
+
+            <!-- Card Pontos de Coleta -->
+            <div class="metric-card pontos" (click)="navegarPara('pontos')">
+                <div class="card-header">
+                    <h3>📍 Pontos de Coleta</h3>
+                    <span class="badge">{{ metricas.pontos.total }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="metric-row">
+                        <span>Ativos</span>
+                        <strong class="success">{{ metricas.pontos.ativos }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Inativos</span>
+                        <strong class="danger">{{ metricas.pontos.inativos }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Média usuários/ponto</span>
+                        <strong>{{ metricas.pontos.mediaUsuariosPorPonto }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Recompensas -->
+            <div class="metric-card recompensas" (click)="navegarPara('recompensas')">
+                <div class="card-header">
+                    <h3>🎁 Recompensas</h3>
+                    <span class="badge">{{ metricas.recompensas.totalResgates }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="metric-row">
+                        <span>Resgates ({{ periodo }} dias)</span>
+                        <strong>{{ metricas.recompensas.totalResgates }}</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Pontos em Circulação</span>
+                        <strong>{{ metricas.recompensas.pontosEmCirculacao }}</strong>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Top Usuários -->
-        <div class="section-card">
-            <h3>👑 Top 5 Usuários</h3>
-            <div class="usuarios-list">
-                <div class="usuario-item" *ngFor="let usuario of dashboardData.topUsuarios.slice(0, 5); let i = index">
-                    <div class="usuario-posicao" [class.top3]="i < 3">
-                        <span *ngIf="i === 0">🥇</span>
-                        <span *ngIf="i === 1">🥈</span>
-                        <span *ngIf="i === 2">🥉</span>
-                        <span *ngIf="i > 2">{{ i + 1 }}º</span>
-                    </div>
-                    <div class="usuario-info">
-                        <div class="usuario-nome">{{ usuario.nome }}</div>
-                        <div class="usuario-email">{{ usuario.email }}</div>
-                    </div>
-                    <div class="usuario-pontos">
-                        🏆 {{ usuario.pontos }} pontos
-                    </div>
-                </div>
+        <!-- Ações Rápidas -->
+        <div class="acoes-rapidas">
+            <h2>⚡ Ações Rápidas</h2>
+            <div class="acoes-grid">
+                <button class="acao-btn" (click)="navegarPara('denuncias')">
+                    <span class="acao-icon">🚨</span>
+                    <span>Gerenciar Denúncias</span>
+                </button>
 
-                <div class="empty-state" *ngIf="dashboardData.topUsuarios.length === 0">
-                    <p>Nenhum usuário com pontos registrados</p>
-                </div>
+                <button class="acao-btn" (click)="navegarPara('validacao')">
+                    <span class="acao-icon">✅</span>
+                    <span>Validar Materiais</span>
+                </button>
+
+                <button class="acao-btn" (click)="navegarPara('pontos')">
+                    <span class="acao-icon">📍</span>
+                    <span>Gerenciar Pontos</span>
+                </button>
+
+                <button class="acao-btn" (click)="navegarPara('usuarios')">
+                    <span class="acao-icon">👥</span>
+                    <span>Gerenciar Usuários</span>
+                </button>
+
+                <button class="acao-btn" (click)="navegarPara('recompensas')">
+                    <span class="acao-icon">🎁</span>
+                    <span>Gerenciar Recompensas</span>
+                </button>
+
+                <button class="acao-btn" (click)="navegarPara('metricas')">
+                    <span class="acao-icon">📊</span>
+                    <span>Ver Métricas Completas</span>
+                </button>
             </div>
         </div>
 

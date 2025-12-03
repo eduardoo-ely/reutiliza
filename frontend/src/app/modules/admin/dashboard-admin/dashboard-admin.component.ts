@@ -1,109 +1,101 @@
-// frontend/src/app/modules/admin/dashboard-admin/dashboard-admin.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
-interface DashboardData {
-    periodo: {
-        dias: number;
-        dataInicio: Date;
-        dataFim: Date;
+interface MetricasGerais {
+    usuarios: {
+        total: number;
+        ativos: number;
+        novos: number;
+        crescimento: number;
+        taxaAtivacao: string;
     };
-    resumo: {
-        totalUsuarios: number;
-        totalMateriais: number;
-        materiaisValidados: number;
-        materiaisPendentes: number;
-        totalPontoColetas: number;
-        alertasEstoque: number;
+    materiais: {
+        total: number;
+        validados: number;
+        pendentes: number;
+        crescimento: number;
         taxaValidacao: string;
     };
-    materiaisPorTipo: Array<{
-        _id: string;
-        totalQuantidade: number;
-        totalPontos: number;
-        count: number;
-    }>;
-    materiaisPorPonto: Array<{
-        pontoNome: string;
-        pontoEndereco: string;
-        totalQuantidade: number;
-        totalMateriais: number;
-    }>;
-    tendencia: Array<{
-        _id: string;
-        totalQuantidade: number;
-        totalMateriais: number;
-    }>;
-    topUsuarios: Array<{
-        nome: string;
-        email: string;
-        pontos: number;
-    }>;
-    recompensasDisponiveis: number;
+    pontos: {
+        total: number;
+        ativos: number;
+        inativos: number;
+        mediaUsuariosPorPonto: string;
+    };
+    recompensas: {
+        totalResgates: number;
+        pontosEmCirculacao: number;
+    };
+    alertas: {
+        denunciasPendentes: number;
+        materiaisPendentes: number;
+    };
 }
 
 @Component({
     selector: 'app-dashboard-admin',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, RouterModule],
     templateUrl: './dashboard-admin.component.html',
     styleUrls: ['./dashboard-admin.component.css']
 })
 export class DashboardAdminComponent implements OnInit {
-    dashboardData: DashboardData | null = null;
+    metricas: MetricasGerais | null = null;
     carregando = true;
-    mensagemErro = '';
     periodo = 30;
+    erro = '';
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private router: Router
+    ) {}
 
-    ngOnInit(): void {
-        this.carregarDashboard();
+    ngOnInit() {
+        this.carregarMetricas();
     }
 
-    carregarDashboard(): void {
+    carregarMetricas() {
         this.carregando = true;
-        this.mensagemErro = '';
+        this.erro = '';
 
-        this.http.get<{ success: boolean; data: DashboardData }>(
-            `${environment.apiUrl}/dashboard/admin?periodo=${this.periodo}`
-        ).subscribe({
+        const url = `${environment.apiUrl}/admin/metricas/geral?periodo=${this.periodo}`;
+
+        this.http.get<any>(url).subscribe({
             next: (response) => {
-                this.dashboardData = response.data;
+                if (response.success) {
+                    this.metricas = response.data;
+                }
                 this.carregando = false;
             },
             error: (err) => {
-                console.error('Erro ao carregar dashboard:', err);
-                this.mensagemErro = 'Erro ao carregar dashboard administrativo';
+                console.error('Erro ao carregar métricas:', err);
+                this.erro = 'Erro ao carregar métricas do sistema';
                 this.carregando = false;
             }
         });
     }
 
-    mudarPeriodo(dias: number): void {
+    alterarPeriodo(dias: number) {
         this.periodo = dias;
-        this.carregarDashboard();
+        this.carregarMetricas();
     }
 
-    getIconeMaterial(tipo: string): string {
-        const icones: { [key: string]: string } = {
-            'Papel': '📄',
-            'Plástico': '🥤',
-            'Vidro': '🍾',
-            'Metal': '🔩',
-            'Eletrônico': '📱',
-            'Óleo': '🛢️',
-            'Outros': '♻️'
-        };
-        return icones[tipo] || '♻️';
+    navegarPara(rota: string) {
+        this.router.navigate([`/admin/${rota}`]);
     }
 
-    getMaxTendencia(): number {
-        if (!this.dashboardData || this.dashboardData.tendencia.length === 0) {
-            return 1;
-        }
-        return Math.max(...this.dashboardData.tendencia.map(t => t.totalQuantidade));
+    getCorCrescimento(crescimento: number): string {
+        if (crescimento > 0) return 'text-green-600';
+        if (crescimento < 0) return 'text-red-600';
+        return 'text-gray-600';
+    }
+
+    getIconeCrescimento(crescimento: number): string {
+        if (crescimento > 0) return '↗️';
+        if (crescimento < 0) return '↘️';
+        return '➡️';
     }
 }
